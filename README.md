@@ -19,6 +19,8 @@ Rakendus on juba juurutatud Railway platvormile ja on kättesaadav aadressil:
 
 **https://miljonimang-production.up.railway.app/**
 
+> Rakendust pole vaja lokaalselt käivitada, ava lihtsalt Railway URL.
+
 ### Uute Ülesannete Lisamine
 
 Uute ülesannete lisamiseks:
@@ -31,9 +33,6 @@ Uute ülesannete lisamiseks:
 ### AI Küsimuste Generatsioon
 
 Kõik küsimused genereeritakse OpenAI API abil reaalajas. Iga mängu jaoks luuakse uued küsimused ülesande kirjelduse ja lahenduse põhjal.
-
-5. **Ava brauseris**
-   Navigeeri aadressile `http://localhost:3000`
 
 ## Input-kausta struktuur
 
