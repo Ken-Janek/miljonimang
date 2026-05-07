@@ -4,392 +4,63 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Miljonimäng - Ülesande Valideerimine</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        :root {
-            --primary-color: #2c3e50;
-            --secondary-color: #3498db;
-            --success-color: #27ae60;
-            --danger-color: #e74c3c;
-            --warning-color: #f39c12;
-            --light-bg: #ecf0f1;
-            --dark-bg: #2c3e50;
-            --text-dark: #2c3e50;
-            --text-light: #7f8c8d;
-            --border-radius: 8px;
-            --shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-            --shadow-lg: 0 4px 20px rgba(0, 0, 0, 0.2);
-        }
-
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: var(--text-dark);
-            line-height: 1.6;
-            min-height: 100vh;
-        }
-
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            background: white;
-        }
-
-        .header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 40px 20px;
-            text-align: center;
-            box-shadow: var(--shadow-lg);
-        }
-
-        .header h1 {
-            font-size: 2.5rem;
-            margin-bottom: 10px;
-            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
-        }
-
-        .header p {
-            font-size: 1.1rem;
-            opacity: 0.9;
-        }
-
-        .main {
-            flex: 1;
-            padding: 40px 20px;
-        }
-
-        section {
-            margin-bottom: 3rem;
-        }
-
-        section h2 {
-            color: var(--primary-color);
-            margin-bottom: 1rem;
-            border-bottom: 2px solid var(--secondary-color);
-            padding-bottom: 0.5rem;
-            font-size: 1.8rem;
-        }
-
-        section h3 {
-            color: var(--secondary-color);
-            margin-top: 1.5rem;
-            margin-bottom: 0.5rem;
-            font-size: 1.3rem;
-        }
-
-        section p {
-            margin-bottom: 1rem;
-            color: var(--text-dark);
-        }
-
-        ul, ol {
-            margin-left: 1.5rem;
-            margin-bottom: 1rem;
-        }
-
-        li {
-            margin-bottom: 0.5rem;
-            color: var(--text-dark);
-        }
-
-        code {
-            background: var(--light-bg);
-            padding: 0.2rem 0.4rem;
-            border-radius: 3px;
-            font-family: 'Courier New', monospace;
-            color: #d63384;
-        }
-
-        code.block {
-            display: block;
-            background: var(--light-bg);
-            padding: 1rem;
-            border-radius: 4px;
-            overflow-x: auto;
-            margin: 1rem 0;
-            border-left: 4px solid var(--secondary-color);
-        }
-
-        .features {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 1.5rem;
-            margin-top: 1.5rem;
-        }
-
-        .feature {
-            background: var(--light-bg);
-            padding: 1.5rem;
-            border-radius: var(--border-radius);
-            border-left: 4px solid var(--secondary-color);
-            box-shadow: var(--shadow);
-        }
-
-        .feature h4 {
-            color: var(--secondary-color);
-            margin-bottom: 0.5rem;
-            font-size: 1.1rem;
-        }
-
-        .feature p {
-            color: var(--text-dark);
-            font-size: 0.95rem;
-        }
-
-        .buttons {
-            display: flex;
-            gap: 1rem;
-            margin-top: 1.5rem;
-            flex-wrap: wrap;
-        }
-
-        .btn {
-            display: inline-block;
-            padding: 0.75rem 1.5rem;
-            border-radius: var(--border-radius);
-            text-decoration: none;
-            font-weight: bold;
-            transition: all 0.3s ease;
-            border: none;
-            cursor: pointer;
-            font-size: 1rem;
-        }
-
-        .btn-primary {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-        }
-
-        .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: var(--shadow-lg);
-        }
-
-        .btn-secondary {
-            background: var(--secondary-color);
-            color: white;
-        }
-
-        .btn-secondary:hover {
-            background: #2980b9;
-            transform: translateY(-2px);
-            box-shadow: var(--shadow-lg);
-        }
-
-        .footer {
-            background: var(--dark-bg);
-            color: white;
-            text-align: center;
-            padding: 20px;
-            margin-top: auto;
-        }
-
-        .footer a {
-            color: white;
-            text-decoration: none;
-        }
-
-        .footer a:hover {
-            text-decoration: underline;
-        }
-
-        .stats {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-            gap: 1rem;
-            margin-top: 1rem;
-        }
-
-        .stat {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 1.5rem;
-            border-radius: var(--border-radius);
-            text-align: center;
-            box-shadow: var(--shadow);
-        }
-
-        .stat h3 {
-            font-size: 2rem;
-            color: white;
-            margin: 0 0 0.5rem 0;
-            border: none;
-            padding: 0;
-        }
-
-        .stat p {
-            margin: 0;
-            opacity: 0.9;
-        }
-
-        @media (max-width: 768px) {
-            .header h1 {
-                font-size: 1.8rem;
-            }
-
-            .main {
-                padding: 20px 10px;
-            }
-
-            section h2 {
-                font-size: 1.4rem;
-            }
-
-            .features {
-                grid-template-columns: 1fr;
-            }
-        }
-    </style>
+    <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
     <div class="container">
+        <!-- Header -->
         <header class="header">
-            <h1>🎮 Miljonimäng</h1>
-            <p>Kontrolli, kas saad lahendusest aru</p>
+            <div class="header-content">
+                <h1>🎮 Miljonimäng</h1>
+                <p class="subtitle">Kontrolli, kas saad lahendusest aru</p>
+            </div>
         </header>
 
+        <!-- Main Content -->
         <main class="main">
-            <section>
-                <h2>Mis on Miljonimäng?</h2>
-                <p>Miljonimäng on veebirakendus, mis aitab õpilastel ja õpetajatel kontrollida, kas õppija saab aru programmeerimise ülesande lahendusest. Rakendus kasutab AI-tehisintellekti, et genereerida kontekstipõhiseid küsimusi millionäri-mängu formaadis.</p>
-                
-                <div class="stats">
-                    <div class="stat">
-                        <h3>15</h3>
-                        <p>Küsimust</p>
-                    </div>
-                    <div class="stat">
-                        <h3>3</h3>
-                        <p>Lifelain</p>
-                    </div>
-                    <div class="stat">
-                        <h3>1M€</h3>
-                        <p>Pott</p>
-                    </div>
-                    <div class="stat">
-                        <h3>∞</h3>
-                        <p>Harjutusi</p>
+            <!-- Loading State -->
+            <div id="loadingState" class="state hidden">
+                <div class="spinner"></div>
+                <p>Laadin ülesandeid...</p>
+            </div>
+
+            <!-- Assignments List -->
+            <div id="assignmentsState" class="state">
+                <h2>Vali ülesanne:</h2>
+                <div id="assignmentsList" class="assignments-list">
+                    <!-- Will be populated by JavaScript -->
+                </div>
+            </div>
+
+            <!-- Assignment Details -->
+            <div id="assignmentDetailState" class="state hidden">
+                <div class="assignment-detail">
+                    <button class="btn-back" onclick="goBack()">← Tagasi</button>
+                    <h2 id="detailTitle"></h2>
+                    <div id="detailContent" class="markdown-content"></div>
+                    <div class="action-buttons">
+                        <button class="btn-primary" onclick="startGame()">Alusta mängu</button>
+                        <button class="btn-secondary" onclick="goBack()">Tagasi</button>
                     </div>
                 </div>
-            </section>
+            </div>
 
-            <section>
-                <h2>✨ Peamised Omadused</h2>
-                <div class="features">
-                    <div class="feature">
-                        <h4>🤖 AI Küsimuste Genereerimine</h4>
-                        <p>GPT-3.5 abil genereeritakse kontekstipõhised küsimused ülesande lahenduse põhjal</p>
-                    </div>
-                    <div class="feature">
-                        <h4>🎯 Millionäri Mängu Mehaanika</h4>
-                        <p>Klassikaline 15-küsimuseline mäng progressiivse raskusega ja ohutusetasemetega</p>
-                    </div>
-                    <div class="feature">
-                        <h4>💡 Kolm Lifelain</h4>
-                        <p>Vihje, 50:50 ja Publiku hääletus aitavad raskete küsimuste lahendamisel</p>
-                    </div>
-                    <div class="feature">
-                        <h4>📊 Randomiseeritud Küsimused</h4>
-                        <p>Iga mäng on erinev - küsimused ja vastused tulevad randomiseeritud järjekordas</p>
-                    </div>
-                    <div class="feature">
-                        <h4>🇪🇪 Eesti Keelne</h4>
-                        <p>Täielikult eesti keeles - kasutajaliides, küsimused, tagasiside</p>
-                    </div>
-                    <div class="feature">
-                        <h4>🚀 Lihtne Laiendamine</h4>
-                        <p>Lisage uusi ülesandeid JSON failide abil - ei vaja programmeerimist</p>
-                    </div>
+            <!-- Error State -->
+            <div id="errorState" class="state hidden">
+                <div class="error-box">
+                    <h3>❌ Viga!</h3>
+                    <p id="errorMessage"></p>
+                    <button class="btn-secondary" onclick="goBack()">Tagasi</button>
                 </div>
-            </section>
-
-            <section>
-                <h2>🚀 Kiirstart</h2>
-                
-                <h3>Eeldused</h3>
-                <ul>
-                    <li>Node.js 14+</li>
-                    <li>npm</li>
-                    <li>Git</li>
-                </ul>
-
-                <h3>Paigaldamine</h3>
-                <code class="block">git clone https://github.com/Ken-Janek/miljonimang.git<br>
-cd miljonimang<br>
-npm install<br>
-npm start</code>
-
-                <p>Seejärel ava brauseris: <strong>http://localhost:3000</strong></p>
-
-                <h3>Uute Ülesannete Lisamine</h3>
-                <ol>
-                    <li>Loo kaust: <code>input/002/</code></li>
-                    <li>Lisage failid: <code>assignment.md</code>, lahenduse failid</li>
-                    <li>Loo <code>questions.json</code> 15 küsimuse klassiga</li>
-                    <li>Rakendus laadib automaatselt</li>
-                </ol>
-            </section>
-
-            <section>
-                <h2>🏗️ Arhitektuur</h2>
-                <ul>
-                    <li><strong>Backend:</strong> Node.js + Express</li>
-                    <li><strong>Frontend:</strong> HTML5 + CSS3 + Vanilla JavaScript</li>
-                    <li><strong>AI:</strong> OpenAI GPT-3.5-turbo (valikuline)</li>
-                    <li><strong>Andmed:</strong> JSON failid (questions.json)</li>
-                    <li><strong>Cache:</strong> Lokaalne failisüsteem</li>
-                </ul>
-            </section>
-
-            <section>
-                <h2>📋 Küsimuste Formaat</h2>
-                <p>Küsimused peavad olema JSON formaadis:</p>
-                <code class="block">{<br>
-&nbsp;&nbsp;"level": 1,<br>
-&nbsp;&nbsp;"question": "Küsimuse tekst?",<br>
-&nbsp;&nbsp;"options": ["Valik A", "Valik B", "Valik C", "Valik D"],<br>
-&nbsp;&nbsp;"correctIndex": 1,<br>
-&nbsp;&nbsp;"explanation": "Selgitus"<br>
-}</code>
-            </section>
-
-            <section>
-                <h2>🔗 Lingid</h2>
-                <div class="buttons">
-                    <a href="https://github.com/Ken-Janek/miljonimang" class="btn btn-primary">📦 GitHub Repo</a>
-                    <a href="https://github.com/Ken-Janek/miljonimang/blob/main/README.md" class="btn btn-secondary">📖 Täielik Dokumentatsioon</a>
-                </div>
-            </section>
-
-            <section>
-                <h2>💡 Kasutamise Näited</h2>
-                <ul>
-                    <li><strong>Kooliõpetus:</strong> Õpilased valideerivad enda ülesandeid</li>
-                    <li><strong>Kodutöö Kontroll:</strong> Õpetajad kontrollivad, kas õpilased saavad aru</li>
-                    <li><strong>Eneseõpe:</strong> Interaktiivne viis materjali omandamiseks</li>
-                    <li><strong>Kodeerimise Intervjuu:</strong> Kandidaatide arusaamise testimine</li>
-                </ul>
-            </section>
-
-            <section>
-                <h2>📝 Litsents</h2>
-                <p>MIT License - Kasutage vabalt, muutke ja levitage</p>
-            </section>
+            </div>
         </main>
 
+        <!-- Footer -->
         <footer class="footer">
             <p>© 2026 Miljonimäng | Ülesannete valideerimine AI abil</p>
-            <p><a href="https://github.com/Ken-Janek/miljonimang">GitHub Repository ↗</a></p>
         </footer>
     </div>
+
+    <script src="js/app.js"></script>
 </body>
 </html>
