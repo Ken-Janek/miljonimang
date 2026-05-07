@@ -78,7 +78,7 @@ async function generateQuestions(assignment, solutionFiles) {
 
     const prompt = buildQuestionPrompt(assignment, solutionFiles);
 
-    const message = await client.messages.create({
+    const response = await client.chat.completions.create({
       model: MODEL,
       max_tokens: 4000,
       messages: [
@@ -89,7 +89,7 @@ async function generateQuestions(assignment, solutionFiles) {
       ]
     });
 
-    const responseText = message.content[0].type === 'text' ? message.content[0].text : '';
+    const responseText = response.choices[0]?.message?.content || '';
     const questions = parseQuestionsFromResponse(responseText);
 
     // Randomize the questions each time (no caching)
@@ -246,7 +246,7 @@ Variant D: ${question.options[3]}
 
 Anna kasutajale LÜHIKE vihje (1-2 lauset), mis aitab tal õige vastuse leida, kuid ÄRA ütle otsest vastust.`;
 
-    const message = await client.messages.create({
+    const response = await client.chat.completions.create({
       model: MODEL,
       max_tokens: 500,
       messages: [
@@ -257,7 +257,7 @@ Anna kasutajale LÜHIKE vihje (1-2 lauset), mis aitab tal õige vastuse leida, k
       ]
     });
 
-    return message.content[0].type === 'text' ? message.content[0].text : 'Vihje ei ole saadaval';
+    return response.choices[0]?.message?.content || 'Vihje ei ole saadaval';
   } catch (error) {
     console.error('Error generating hint:', error);
     return 'Vihje ei ole saadaval';
