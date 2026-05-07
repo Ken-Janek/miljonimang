@@ -2,9 +2,11 @@ const { OpenAI } = require('openai');
 const fs = require('fs-extra');
 const path = require('path');
 
-// Initialize OpenAI only if API key is provided
-const client = process.env.OPENAI_API_KEY ? new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY
+// Initialize OpenAI only if a real API key is provided
+const openAiKey = process.env.OPENAI_API_KEY;
+const validOpenAiKey = openAiKey && !openAiKey.includes('your_api_key') && !openAiKey.includes('sk-your-');
+const client = validOpenAiKey ? new OpenAI({
+  apiKey: openAiKey
 }) : null;
 
 const MODEL = process.env.OPENAI_MODEL || 'gpt-3.5-turbo';
@@ -78,22 +80,28 @@ async function generateQuestions(assignment, solutionFiles) {
 
     const prompt = buildQuestionPrompt(assignment, solutionFiles);
 
-    const response = await client.chat.completions.create({
-      model: MODEL,
-      max_tokens: 4000,
-      messages: [
-        {
-          role: 'user',
-          content: prompt
-        }
-      ]
-    });
+    try {
+      const response = await client.chat.completions.create({
+        model: MODEL,
+        max_tokens: 4000,
+        messages: [
+          {
+            role: 'user',
+            content: prompt
+          }
+        ]
+      });
 
-    const responseText = response.choices[0]?.message?.content || '';
-    const questions = parseQuestionsFromResponse(responseText);
+      const responseText = response.choices[0]?.message?.content || '';
+      const questions = parseQuestionsFromResponse(responseText);
 
-    // Randomize the questions each time (no caching)
-    return randomizeQuestions(questions);
+      // Randomize the questions each time (no caching)
+      return randomizeQuestions(questions);
+    } catch (error) {
+      console.warn('[OpenAI] Failed to generate questions, falling back to mock mode:', error.message);
+      const mockQuestions = generateMockQuestions(assignment.title);
+      return randomizeQuestions(mockQuestions);
+    }
   } catch (error) {
     console.error('Error generating questions:', error);
     throw error;
