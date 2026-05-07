@@ -128,6 +128,10 @@ NÕUDED:
 6. Ainult üks vastus on õige
 7. Küsimused peavad kontrolliva arusaamist, mitte ainult mälu
 8. Vastusevariandid peavad olema usutavad
+9. KÕIK vastusevariandid peavad olema SAMADE pikkustega (±2 sõna)
+10. Õige vastus EI TOHI olla pikem/lühem kui valed vastused
+11. Vastusevariandid peavad olema sarnase keerukusastmega
+12. EI OLE võimalik õiget vastust ära arvata pikkuse järgi
 
 VÄLJUNDVORMING:
 Tagasta AINULT JSON array, ilma selgitavate tekstideta:
