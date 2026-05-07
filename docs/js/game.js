@@ -308,7 +308,7 @@ async function getHint() {
             return;
         }
 
-        const response = await fetch('http://localhost:3000/api/game/hint', {
+        const response = await fetch('https://miljonimang-production.up.railway.app/api/game/hint', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -344,7 +344,7 @@ async function use50Fifty() {
             return;
         }
 
-        const response = await fetch('http://localhost:3000/api/game/50-50', {
+        const response = await fetch('https://miljonimang-production.up.railway.app/api/game/50-50', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -387,7 +387,7 @@ async function askAudience() {
             return;
         }
 
-        const response = await fetch('http://localhost:3000/api/game/audience-poll', {
+        const response = await fetch('https://miljonimang-production.up.railway.app/api/game/audience-poll', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -482,7 +482,7 @@ async function quitGame() {
     }
 
     try {
-        const response = await fetch('http://localhost:3000/api/game/quit', {
+        const response = await fetch('https://miljonimang-production.up.railway.app/api/game/quit', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'

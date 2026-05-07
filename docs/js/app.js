@@ -14,7 +14,7 @@ async function loadAssignments() {
     try {
         showState('loadingState');
 
-        const response = await fetch('http://localhost:3000/api/assignments');
+        const response = await fetch('https://miljonimang-production.up.railway.app/api/assignments');
         if (!response.ok) throw new Error('Failed to load assignments');
 
         const data = await response.json();
@@ -59,7 +59,7 @@ async function selectAssignment(assignmentId) {
     try {
         showState('loadingState');
 
-        const response = await fetch(`http://localhost:3000/api/assignments/${assignmentId}`);
+        const response = await fetch(`https://miljonimang-production.up.railway.app/api/assignments/${assignmentId}`);
         if (!response.ok) throw new Error('Failed to load assignment');
 
         const data = await response.json();
@@ -120,7 +120,7 @@ async function startGame() {
     try {
         showState('loadingState');
 
-        const response = await fetch('http://localhost:3000/api/game/start', {
+        const response = await fetch('https://miljonimang-production.up.railway.app/api/game/start', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
