@@ -1,53 +1,25 @@
 # 🚀 Kiire Juhend - Miljonimäng
 
-Vaid 5 minutit kestev juhend, kuidas rakendust käivitada.
+Rakendus on juba juurutatud Railway platvormile!
 
-## Samm 1: Sõltuvuste Installeerimine
+## Rakenduse Kasutamine
 
-```bash
-npm install
-```
+**Ava brauseris: https://miljonimang-production.up.railway.app/**
 
-## Samm 2: OpenAI API Võtme Hankimine
+### Kuidas Lisada Uusi Ülesandeid
 
-1. Minge https://platform.openai.com/api-keys
-2. Looge uus "Secret key"
-3. Kopeerige võti
+1. **Looge uus kaust** `input/XXX/` (järgmine number)
+2. **Lisage failid:**
+   - `assignment.md` - ülesande kirjeldus
+   - Lahendusfailid (HTML, CSS, JS)
+3. **Pushige GitHubi** - Railway deployb automaatselt
 
-## Samm 3: .env Faili Seadistamine
+### AI Küsimuste Generatsioon
 
-Looge fail `.env` projekti juurkausta ja lisage:
-
-```
-OPENAI_API_KEY=sk-YOUR_KEY_HERE
-PORT=3000
-```
-
-Asendage `YOUR_KEY_HERE` tegeliku API võtmega.
-
-## Samm 4: Rakenduse Käivitamine
-
-```bash
-npm start
-```
-
-Konsoolisse peaks ilmuma:
-
-```
-╔════════════════════════════════════════╗
-║   MILJONIMÄNG - Ülesande Valideeri    ║
-║                                        ║
-║  Server on käivitatud!                ║
-║  Ava brauseris: http://localhost:3000  ║
-║                                        ║
-║  Käsud:                               ║
-║  - npm start     (tootmine)           ║
-║  - npm run dev   (arendamine)         ║
-║                                        ║
-╚════════════════════════════════════════╝
-```
-
-## Samm 5: Avage Brauseris
+- Küsimused genereeritakse OpenAI API abil
+- Iga mängu jaoks uued küsimused
+- 15 küsimust järjest raskusastmelt (1-15)
+- 4 valikvastust iga küsimuse kohta
 
 Avage aadress: **http://localhost:3000**
 

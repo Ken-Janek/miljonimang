@@ -8,45 +8,29 @@ Erinevalt tavalistest testidest kontrollib Miljonimäng mitte lihtsalt seda, kas
 
 ## Kasutatud tehnoloogiad
 
-- **Backend**: Node.js + Express
+- **Backend**: Node.js + Express (Railway deployment)
 - **Frontend**: HTML5, CSS3, JavaScript (ES6+)
 - **AI**: OpenAI API (GPT-4/GPT-3.5)
 - **Andmehaldus**: JSON failid, faalisüsteem
 
-## Käivitamise juhend
+## Rakenduse Kasutamine
 
-### Eeltingimused
-- Node.js (v14+) ja npm
-- OpenAI API võti (saadaval [platform.openai.com](https://platform.openai.com))
+Rakendus on juba juurutatud Railway platvormile ja on kättesaadav aadressil:
 
-### Installatsioon
+**https://miljonimang-production.up.railway.app/**
 
-1. **Laadi alla ja loo projektikaust**
-   ```bash
-   cd Miljonimang
-   ```
+### Uute Ülesannete Lisamine
 
-2. **Installi sõltuvused**
-   ```bash
-   npm install
-   ```
+Uute ülesannete lisamiseks:
 
-3. **Seadista keskkonnavalikud**
-   Looge faili `.env` projekti juurkaustasse:
-   ```
-   OPENAI_API_KEY=your_api_key_here
-   PORT=3000
-   NODE_ENV=development
-   ```
+1. Looge uus kaust `input/XXX/` (kus XXX on järgmine number)
+2. Lisage `assignment.md` fail ülesande kirjeldusega
+3. Lisage lahendusfailid (HTML, CSS, JS)
+4. Pushige muudatused GitHubi - Railway deployb automaatselt
 
-4. **Käivita rakendus**
-   ```bash
-   npm start
-   ```
-   või arendamisel:
-   ```bash
-   npm run dev
-   ```
+### AI Küsimuste Generatsioon
+
+Kõik küsimused genereeritakse OpenAI API abil reaalajas. Iga mängu jaoks luuakse uued küsimused ülesande kirjelduse ja lahenduse põhjal.
 
 5. **Ava brauseris**
    Navigeeri aadressile `http://localhost:3000`
