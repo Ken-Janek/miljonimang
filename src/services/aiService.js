@@ -127,11 +127,14 @@ NÕUDED:
 5. Igal küsimusel peab olema 4 vastusevarianti
 6. Ainult üks vastus on õige
 7. Küsimused peavad kontrolliva arusaamist, mitte ainult mälu
-8. Vastusevariandid peavad olema usutavad
+8. Vastusevariandid peavad olema usutavad ja loogiliselt seotud küsimusega
 9. KÕIK vastusevariandid peavad olema SAMADE pikkustega (±2 sõna)
 10. Õige vastus EI TOHI olla pikem/lühem kui valed vastused
 11. Vastusevariandid peavad olema sarnase keerukusastmega
-12. EI OLE võimalik õiget vastust ära arvata pikkuse järgi
+12. EI OLE võimalik õiget vastust ära arvata pikkuse, sõnastuse või emotssiooni järgi
+13. Ära kasuta triviaalset või äärmuslikku sõnastust nagu "Ainult ...", "Kunagi ...", "Kõik ...", "Pole vaja" või "Kõik need peale ühte"
+14. Iga vale vastus peab olema tegelikult plausible vigane lahendus või vale arusaam teemast
+15. Kui sa ei suuda koostada 4 usutavat vastusevarianti, muuda küsimust nii, et kõigil vastustel oleks tasaväärne loogika
 
 VÄLJUNDVORMING:
 Tagasta AINULT JSON array, ilma selgitavate tekstideta:
