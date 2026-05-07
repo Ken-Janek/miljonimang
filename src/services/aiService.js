@@ -65,21 +65,12 @@ async function generateQuestions(assignment, solutionFiles) {
       return randomizeQuestions(questionsData);
     }
 
-    // Check cache second
-    const cacheKey = generateCacheKey(assignment.id);
-    const cachedQuestions = await getFromCache(cacheKey);
-    if (cachedQuestions) {
-      console.log(`[Cache HIT] Using cached questions for ${assignment.id}`);
-      // Randomize the questions each time
-      return randomizeQuestions(cachedQuestions);
-    }
-
-    // If no API key, use mock questions
+    // Skip cache - always generate fresh questions
+    console.log(`[AI Generation] Generating fresh questions for ${assignment.id}...`);
     if (!client) {
       console.log(`[Mock Mode] Generating mock questions for ${assignment.id}...`);
       const mockQuestions = generateMockQuestions(assignment.title);
-      await saveToCache(cacheKey, mockQuestions);
-      // Randomize the questions each time
+      // Randomize the questions each time (no caching)
       return randomizeQuestions(mockQuestions);
     }
 
@@ -101,10 +92,7 @@ async function generateQuestions(assignment, solutionFiles) {
     const responseText = message.content[0].type === 'text' ? message.content[0].text : '';
     const questions = parseQuestionsFromResponse(responseText);
 
-    // Cache the questions
-    await saveToCache(cacheKey, questions);
-
-    // Randomize the questions each time
+    // Randomize the questions each time (no caching)
     return randomizeQuestions(questions);
   } catch (error) {
     console.error('Error generating questions:', error);
