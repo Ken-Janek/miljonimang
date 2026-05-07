@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="et">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TODO Rakendus</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>📝 Minu TODO Nimekiri</h1>
+        </header>
+
+        <main>
+            <div class="input-section">
+                <input 
+                    type="text" 
+                    id="todoInput" 
+                    placeholder="Lisa uus ülesanne..."
+                    autocomplete="off"
+                >
+                <button id="addBtn">Lisa</button>
+            </div>
+
+            <div class="stats">
+                <span>Kokku: <strong id="totalCount">0</strong></span>
+                <span>Tehtud: <strong id="completedCount">0</strong></span>
+                <span>Tegemata: <strong id="pendingCount">0</strong></span>
+            </div>
+
+            <ul id="todoList" class="todo-list">
+                <!-- Ülesanded kuvatakse siia -->
+            </ul>
+
+            <button id="clearBtn" class="clear-btn">Eemalda kõik tehtud</button>
+        </main>
+
+        <footer>
+            <p>TODO Rakendus © 2026</p>
+        </footer>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>

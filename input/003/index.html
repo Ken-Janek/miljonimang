@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="et">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kivi-Paber-Käärid</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🎮 Kivi-Paber-Käärid</h1>
+            <p>Mängi arvutiga!</p>
+        </header>
+
+        <main>
+            <!-- Score Section -->
+            <div class="score-board">
+                <div class="score">
+                    <h3>Sina</h3>
+                    <div class="score-value" id="playerScore">0</div>
+                </div>
+                <div class="vs">VS</div>
+                <div class="score">
+                    <h3>Arvuti</h3>
+                    <div class="score-value" id="computerScore">0</div>
+                </div>
+            </div>
+
+            <!-- Round Result -->
+            <div class="result-area">
+                <div class="choice-display">
+                    <div class="player-choice">
+                        <span id="playerEmoji" class="emoji">❓</span>
+                        <p id="playerChoiceName">-</p>
+                    </div>
+                    <div class="result-text">
+                        <p id="resultMessage">Alusta mängu!</p>
+                    </div>
+                    <div class="computer-choice">
+                        <span id="computerEmoji" class="emoji">❓</span>
+                        <p id="computerChoiceName">-</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Game Buttons -->
+            <div class="buttons">
+                <button class="play-btn" onclick="play('kivi')">
+                    <span class="emoji">✊</span>
+                    <span>Kivi</span>
+                </button>
+                <button class="play-btn" onclick="play('paber')">
+                    <span class="emoji">✋</span>
+                    <span>Paber</span>
+                </button>
+                <button class="play-btn" onclick="play('käärid')">
+                    <span class="emoji">✌️</span>
+                    <span>Käärid</span>
+                </button>
+            </div>
+
+            <!-- Reset Button -->
+            <button class="reset-btn" onclick="resetGame()">Jäta mängu</button>
+        </main>
+
+        <footer>
+            <p>Rock-Paper-Scissors © 2026</p>
+        </footer>
+    </div>
+
+    <script src="game.js"></script>
+</body>
+</html>
