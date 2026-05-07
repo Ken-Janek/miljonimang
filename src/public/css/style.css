@@ -6,15 +6,17 @@
 }
 
 :root {
-    --primary-color: #2c3e50;
-    --secondary-color: #3498db;
+    --primary-color: #FF4500; /* Reddit orange */
+    --secondary-color: #FF6B35; /* Lighter orange */
     --success-color: #27ae60;
     --danger-color: #e74c3c;
     --warning-color: #f39c12;
-    --light-bg: #ecf0f1;
-    --dark-bg: #2c3e50;
-    --text-dark: #2c3e50;
-    --text-light: #7f8c8d;
+    --light-bg: #FFFFFF; /* White background */
+    --card-bg: #F8F9FA; /* Light gray for cards */
+    --dark-bg: #1A1A1B; /* Reddit dark text */
+    --text-dark: #1A1A1B; /* Reddit dark text */
+    --text-light: #7F8C8D; /* Light gray text */
+    --border-color: #EDEDED; /* Light border */
     --border-radius: 8px;
     --shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
     --shadow-lg: 0 4px 20px rgba(0, 0, 0, 0.2);
@@ -22,7 +24,7 @@
 
 body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: var(--light-bg); /* White background like Reddit */
     color: var(--text-dark);
     line-height: 1.6;
     min-height: 100vh;
@@ -39,7 +41,7 @@ body {
 }
 
 .header {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: var(--primary-color); /* Reddit orange */
     color: white;
     padding: 40px 20px;
     text-align: center;
@@ -90,8 +92,8 @@ body {
 }
 
 .assignment-card {
-    background: white;
-    border: 2px solid #e0e0e0;
+    background: var(--card-bg); /* Light gray like Reddit cards */
+    border: 1px solid var(--border-color); /* Light border */
     border-radius: var(--border-radius);
     padding: 20px;
     cursor: pointer;
@@ -100,13 +102,13 @@ body {
 }
 
 .assignment-card:hover {
-    border-color: var(--secondary-color);
+    border-color: var(--primary-color); /* Orange border on hover */
     transform: translateY(-5px);
     box-shadow: var(--shadow-lg);
 }
 
 .assignment-card h3 {
-    color: var(--secondary-color);
+    color: var(--primary-color); /* Orange text */
     margin-bottom: 10px;
 }
 
@@ -221,7 +223,7 @@ body {
 
 /* Game Layout */
 .game-body {
-    background: #1a1a1a;
+    background: var(--light-bg); /* White background like Reddit */
 }
 
 .game-container {
@@ -233,7 +235,7 @@ body {
 }
 
 .game-header {
-    background: linear-gradient(135deg, #1a1a1a 0%, #2c2c2c 100%);
+    background: var(--primary-color); /* Reddit orange header */
     color: white;
     padding: 20px;
     display: flex;
@@ -259,7 +261,7 @@ body {
 .score-value {
     font-size: 1.5rem;
     font-weight: bold;
-    color: var(--warning-color);
+    color: var(--light-bg); /* White text on orange background */
 }
 
 .game-wrapper {
@@ -386,17 +388,18 @@ body {
     flex-direction: column;
     align-items: center;
     gap: 5px;
-    background: white;
-    border: 2px solid var(--light-bg);
+    background: var(--card-bg); /* Light gray background */
+    border: 1px solid var(--border-color); /* Light border */
     border-radius: var(--border-radius);
     padding: 10px 15px;
     cursor: pointer;
     transition: all 0.3s ease;
+    color: var(--text-dark);
 }
 
 .lifeline-btn:hover:not(:disabled) {
-    border-color: var(--secondary-color);
-    color: var(--secondary-color);
+    border-color: var(--primary-color); /* Orange border on hover */
+    color: var(--primary-color);
 }
 
 .lifeline-btn:disabled {
@@ -422,29 +425,31 @@ body {
 }
 
 .answer-option {
-    background: white;
-    border: 2px solid #e0e0e0;
+    background: var(--card-bg); /* Light gray background like Reddit */
+    border: 1px solid var(--border-color); /* Light border */
     border-radius: var(--border-radius);
     padding: 20px;
     cursor: pointer;
     transition: all 0.3s ease;
     text-align: center;
     font-weight: 600;
+    color: var(--text-dark);
 }
 
 .answer-option:hover:not(:disabled) {
-    border-color: var(--secondary-color);
+    border-color: var(--primary-color); /* Orange border on hover */
     background: var(--light-bg);
     transform: translateY(-3px);
 }
 
 .answer-option:disabled {
     cursor: not-allowed;
+    opacity: 0.6;
 }
 
 .answer-option.selected {
-    border-color: var(--secondary-color);
-    background: var(--secondary-color);
+    border-color: var(--primary-color); /* Orange border when selected */
+    background: var(--primary-color);
     color: white;
 }
 
