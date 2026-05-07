@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="et">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kalkulaator</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Kalkulaator</h1>
+        
+        <div class="calculator">
+            <div class="input-group">
+                <label for="num1">Esimene arv:</label>
+                <input type="number" id="num1" placeholder="Sisesta arv" step="0.01">
+            </div>
+
+            <div class="input-group">
+                <label for="num2">Teine arv:</label>
+                <input type="number" id="num2" placeholder="Sisesta arv" step="0.01">
+            </div>
+
+            <div class="operations">
+                <button class="btn" onclick="calculate('+')">➕ Liitmine</button>
+                <button class="btn" onclick="calculate('-')">➖ Lahutamine</button>
+                <button class="btn" onclick="calculate('*')">✖️ Korrutamine</button>
+                <button class="btn" onclick="calculate('/')">➗ Jagamine</button>
+            </div>
+
+            <div class="result-box">
+                <p>Tulemus:</p>
+                <div id="result" class="result">0</div>
+            </div>
+
+            <button class="btn-reset" onclick="reset()">🔄 Kustuta</button>
+        </div>
+
+        <div id="error" class="error-message" style="display: none;"></div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

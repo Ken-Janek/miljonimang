@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="et">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Miljonimäng - Mängi</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body class="game-body">
+    <div class="game-container">
+        <!-- Game Header -->
+        <header class="game-header">
+            <div class="header-left">
+                <h1>💰 Miljonimäng</h1>
+            </div>
+            <div class="header-right">
+                <div class="score-display">
+                    <span class="score-label">Hetke tulemus:</span>
+                    <span id="currentScore" class="score-value">0 €</span>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Game Area -->
+        <div class="game-wrapper">
+            <!-- Left Sidebar - Prize Ladder -->
+            <aside class="prize-ladder">
+                <h3>Rahaastmed</h3>
+                <div id="prizeList" class="prize-list">
+                    <!-- Will be populated by JavaScript -->
+                </div>
+            </aside>
+
+            <!-- Center Content - Question -->
+            <main class="game-main">
+                <div id="gameLoading" class="loading-container hidden">
+                    <div class="spinner"></div>
+                    <p>Laadin küsimusi...</p>
+                </div>
+
+                <div id="gameContent" class="game-content hidden">
+                    <!-- Question Header -->
+                    <div class="question-header">
+                        <span class="question-number" id="questionNumber"></span>
+                        <span class="question-level" id="questionLevel"></span>
+                    </div>
+
+                    <!-- Question Text -->
+                    <div class="question-box">
+                        <p id="questionText" class="question-text"></p>
+                    </div>
+
+                    <!-- Lifelines -->
+                    <div class="lifelines">
+                        <button id="btnHint" class="lifeline-btn" onclick="getHint()">
+                            <span class="icon">💡</span>
+                            <span class="label">Vihje</span>
+                        </button>
+                        <button id="btn50" class="lifeline-btn" onclick="use50Fifty()">
+                            <span class="icon">🎯</span>
+                            <span class="label">50:50</span>
+                        </button>
+                        <button id="btnAudience" class="lifeline-btn" onclick="askAudience()">
+                            <span class="icon">👥</span>
+                            <span class="label">Publiku hääletus</span>
+                        </button>
+                    </div>
+
+                    <!-- Answer Options -->
+                    <div class="answers-grid" id="answersGrid">
+                        <!-- Will be populated by JavaScript -->
+                    </div>
+
+                    <!-- Hint Display -->
+                    <div id="hintBox" class="hint-box hidden">
+                        <strong>💡 Vihje:</strong>
+                        <p id="hintText"></p>
+                    </div>
+
+                    <!-- Audience Poll Display -->
+                    <div id="pollBox" class="poll-box hidden">
+                        <strong>👥 Publiku hääletus:</strong>
+                        <div id="pollResults" class="poll-results"></div>
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <div class="action-buttons">
+                        <button class="btn-secondary" onclick="quitGame()">Lõpeta mäng</button>
+                    </div>
+                </div>
+
+                <!-- Result Screen -->
+                <div id="resultScreen" class="result-screen hidden">
+                    <div class="result-box">
+                        <h2 id="resultTitle"></h2>
+                        <p id="resultMessage"></p>
+                        <div id="resultDetails" class="result-details"></div>
+                        <button class="btn-primary" onclick="goHome()">Tagasi koju</button>
+                    </div>
+                </div>
+            </main>
+
+            <!-- Right Sidebar - Info -->
+            <aside class="game-sidebar">
+                <h3>Info</h3>
+                <div id="gameSidebarContent" class="sidebar-content">
+                    <!-- Will be populated -->
+                </div>
+            </aside>
+        </div>
+    </div>
+
+    <script src="js/game.js"></script>
+</body>
+</html>

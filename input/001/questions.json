@@ -1,0 +1,114 @@
+[
+  {
+    "level": 1,
+    "question": "Millised operatsioonid peab kalkulaator toetama?",
+    "options": ["Ainult liitmine", "Liitmine, lahutamine, korrutamine, jagamine", "Ainult korrutamine", "Ruutjuur ja astendamine"],
+    "correctIndex": 1,
+    "explanation": "Ülesande nõudmiste järgi peab kalkulaator toetama 4 põhioperatsiooni."
+  },
+  {
+    "level": 1,
+    "question": "Mis on ülesande eesmärk?",
+    "options": ["Muusika esitus", "Lihtne kalkulaator veebirakendus", "Foto redigeerimine", "Video streaming"],
+    "correctIndex": 1,
+    "explanation": "JavaScripti Kalkulaatori ülesande eesmärk on luua lihtne veebirakendus, mis teostab põhilisi matemaatilisi tehted."
+  },
+  {
+    "level": 2,
+    "question": "Kuidas peaks kalkulaator reageerima jagamisele nulliga?",
+    "options": ["Näitab juhuslikku numbrit", "Kutsub välja veateate", "Jätab ignoreerida", "Kuvab lõpmatus"],
+    "correctIndex": 1,
+    "explanation": "Nulliga jagamine peab olema kontrollitud ja veateadet peab kuvama."
+  },
+  {
+    "level": 2,
+    "question": "Millistest failidest peaks koosistuma kalkulaatori lahendus?",
+    "options": ["Ainult HTML", "Ainult JavaScript", "HTML, CSS ja JavaScript", "Ainult CSS"],
+    "correctIndex": 2,
+    "explanation": "Lahendus peab sisaldama HTML vormile, CSS kujundusele ja JavaScript funktionaalsusele."
+  },
+  {
+    "level": 3,
+    "question": "Kuidas peaks kasutaja kalkulaatoriga suhtlema?",
+    "options": ["Käsureainterfeis", "Graafiline kasutajaliides arvude ja nuppudega", "Hääle abil", "Hiire liigutusega"],
+    "correctIndex": 1,
+    "explanation": "Kalkulaatoril peab olema HTML vorm kahe arvusisendi väljaga ja operatsioonide nupud."
+  },
+  {
+    "level": 6,
+    "question": "Mis on event listeneri roll kalkulaatori lahenduses?",
+    "options": ["Dekoratsioon ainult", "Kasutaja klikkide ja sisendi jälgimine", "Põhivärvuse määramine", "Teksti suuruse muutmine"],
+    "correctIndex": 1,
+    "explanation": "Event listenerid on vajalikud kasutaja sisendi ja nuppude klikkide jälgimiseks."
+  },
+  {
+    "level": 6,
+    "question": "Kuidas peaks kalkulaator vale sisendi käsitsema?",
+    "options": ["Näitab mustast ekraani", "Kutsub välja veateate", "Jätab ignoreerida", "Peatab töö"],
+    "correctIndex": 1,
+    "explanation": "Vale sisend (mittearv) peab kutsuma välja veateate."
+  },
+  {
+    "level": 7,
+    "question": "Millises HTML elemendis peaks tulemust kuvatama?",
+    "options": ["<button>", "<input> väli või väljundväli", "<img>", "<audio>"],
+    "correctIndex": 1,
+    "explanation": "Tulemust peaks kuvatama HTML <input> väljal või väljundväljal."
+  },
+  {
+    "level": 8,
+    "question": "Kuidas eristada korrektselt struktureeritud koodi?",
+    "options": ["Tavade järgimine", "Kommentaarid ja struktureeritus", "Rohkem koodi", "Vähem koodi"],
+    "correctIndex": 1,
+    "explanation": "Kood peab olema loetav, hästi struktureeritud ja kommenteeritud."
+  },
+  {
+    "level": 9,
+    "question": "Millised testid on kriitilised kalkulaatori valideerimiseks?",
+    "options": ["Ainult positiivsete arvude test", "Kõik 4 operatsiooni, nulliga jagamine, vale sisend", "Üksnes liitmise test", "Värvide test"],
+    "correctIndex": 1,
+    "explanation": "Peab testima: kõiki 4 operatsiooni, nulliga jagamise kontrollimist, vale sisendi käsitlemist."
+  },
+  {
+    "level": 11,
+    "question": "Mis võib juhtuda, kui kasutaja sisestab väga suured numbrid?",
+    "options": ["Ei juhtud midagi", "Kalkulaator peaks käituma korrektselt", "Ekraan muutub mustaks", "Programm jäätub"],
+    "correctIndex": 1,
+    "explanation": "Hea lahendus peaks käituma korrektselt erinevate suuruste arvudega."
+  },
+  {
+    "level": 11,
+    "question": "Kuidas peaks kalkulaator negatiivseid numbreid käsitlema?",
+    "options": ["Ei ole vaja", "Kõigis operatsioonides (liitmine, lahutamine, korrutamine, jagamine)", "Ainult liitmises", "Ainult lahutamises"],
+    "correctIndex": 1,
+    "explanation": "Hea lahendus peab toetama negatiivseid numbreid kõigi operatsioonide jaoks."
+  },
+  {
+    "level": 12,
+    "question": "Kuidas lahendus peaks kümnendkohadega käituma?",
+    "options": ["Ei toeta kümnendkohti", "Toetab kümnendkohti kõigis operatsioonides", "Ainult liitmises", "Ainult lahutamises"],
+    "correctIndex": 1,
+    "explanation": "Täiuslik lahendus toetab kümnendkohti kõigis matemaatilistes operatsioonides."
+  },
+  {
+    "level": 13,
+    "question": "Mis on kustutamise nupu (clear/reset) tähtsus?",
+    "options": ["Dekoratsioon", "Kasutaja saab nulli seada ja alustada uuesti", "Ekraani värv muutub", "Helid välja lülitada"],
+    "correctIndex": 1,
+    "explanation": "Kustutamise nupp võimaldab kasutajal andmeid nullida ja uuesti alustada."
+  },
+  {
+    "level": 14,
+    "question": "Milline on oluline sisendite valideerimine?",
+    "options": ["Ei ole vajalik", "Veenduda, et sisend on number", "Jätada kõik sisendid lihtsalt kui on", "Sisendeid ei saa valideerida"],
+    "correctIndex": 1,
+    "explanation": "Sisendite valideerimine aitab vältida vigaseid arvutusi ja programmi krahhe."
+  },
+  {
+    "level": 15,
+    "question": "Mis on olulisim aspekt kalkulaatori koodi arenduses?",
+    "options": ["Ainult kiirus", "Õigsus, loetavus, vigade käsitlemine ja hallatavus", "Ainult kuidas see välja näeb", "Kommentaaride hulk"],
+    "correctIndex": 1,
+    "explanation": "Hea kood kombineerib õigsust, loetavust, veakäsitlemist ja hallatavust."
+  }
+]
