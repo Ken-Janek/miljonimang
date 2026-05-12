@@ -91,6 +91,60 @@ function validateQuestionSet(questions) {
   }
 }
 
+function maskAnswerInHint(text, answer) {
+  if (!text || !answer) return text;
+
+  const escapedAnswer = String(answer).replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  return text.replace(new RegExp(escapedAnswer, 'gi'), 'õige variandiga');
+}
+
+function generateLocalHint(question) {
+  const correctAnswer = question.options[question.correctIndex];
+  const explanation = question.explanation || '';
+  const questionText = question.question || '';
+  const combinedText = `${questionText} ${correctAnswer} ${explanation}`.toLowerCase();
+
+  const hintRules = [
+    {
+      keywords: ['nulliga', 'jagamisel', 'jagamist nulliga'],
+      hint: 'Keskendu erijuhtumile, kus tavaline arvutus ei ole lubatud. Hea lahendus annab kasutajale selge tagasiside, mitte juhusliku tulemuse.'
+    },
+    {
+      keywords: ['event listener', 'listenereid', 'klikk', 'tegevuste'],
+      hint: 'Mõtle sellele, mis seob kasutaja nupuvajutuse JavaScripti koodiga. Õige mõte on seotud sündmuse kuulamisega, mitte kujundusega.'
+    },
+    {
+      keywords: ['sisend', 'tekstiks', 'väärtuste', 'kontrollida'],
+      hint: 'Vaata, kas vastus räägib kasutaja sisendi turvalisest ja korrektsest käsitlemisest. Kalkulaator ei saa usaldada iga sisestatud väärtust otse.'
+    },
+    {
+      keywords: ['failid', 'html', 'css', 'javascript'],
+      hint: 'Mõtle veebirakenduse kolmele põhikihile: struktuur, välimus ja käitumine. Õige vastus katab kõik need rollid.'
+    },
+    {
+      keywords: ['kümnend', 'negatiiv', 'arve'],
+      hint: 'Mõtle, kas arv on ikkagi kehtiv sisend kalkulaatorile. Õige lahendus peaks käsitlema tavalisi arvutamise juhtumeid, mitte neid ära keelama.'
+    },
+    {
+      keywords: ['testida', 'test'],
+      hint: 'Otsi vastust, mis kontrollib päris arvutusloogika riski. Välimuse muutused ei tõesta, et kalkulaator arvutab õigesti.'
+    },
+    {
+      keywords: ['hooldatav', 'kvaliteedi', 'funktsioon', 'loogikat'],
+      hint: 'Mõtle arendaja vaatenurgast: hea lahendus on lihtne kontrollida, muuta ja vigade korral parandada.'
+    },
+    {
+      keywords: ['tulemus', 'kuvada'],
+      hint: 'Kasutaja peab tulemust nägema otse kasutajaliideses. Õige vastus puudutab nähtavat väljundit, mitte lehe tehnilisi metaandmeid.'
+    }
+  ];
+
+  const matchingRule = hintRules.find(rule => rule.keywords.some(keyword => combinedText.includes(keyword)));
+  const hint = matchingRule ? matchingRule.hint : 'Mõtle, milline variant lahendab küsimuses kirjeldatud tegeliku probleemi. Välista vastused, mis tegelevad ainult välimuse või kõrvalise detailiga.';
+
+  return maskAnswerInHint(hint, correctAnswer);
+}
+
 /**
  * Generate questions for an assignment
  */
@@ -298,9 +352,9 @@ function parseQuestionsFromResponse(responseText) {
  */
 async function generateHint(question) {
   try {
-    // If no API key, return mock hint
+    // If no API key, return a local contextual hint
     if (!client) {
-      return "Mõtle küsimuse juurde - vastus on üks neist neljast variandist!";
+      return generateLocalHint(question);
     }
 
     const prompt = `Kasutaja vastab küsimusele:
