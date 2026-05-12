@@ -136,6 +136,7 @@ async function startGame() {
 
         // Store session data
         sessionStorage.setItem('gameSessionId', data.sessionId);
+        sessionStorage.setItem('selectedAssignmentId', currentAssignmentId);
         sessionStorage.setItem('assignmentTitle', currentAssignment.title);
         
         // Store all questions

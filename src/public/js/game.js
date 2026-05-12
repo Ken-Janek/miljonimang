@@ -31,9 +31,14 @@ function updateSafetyLevel(state) {
 }
 
 // Initialize game
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
     gameState.sessionId = sessionStorage.getItem('gameSessionId');
-    const assignmentTitle = sessionStorage.getItem('assignmentTitle');
+    const assignmentId = sessionStorage.getItem('selectedAssignmentId');
+
+    if (assignmentId && (isPageReload() || !gameState.sessionId)) {
+        await startFreshGame(assignmentId);
+        return;
+    }
 
     if (!gameState.sessionId) {
         window.location.href = '/';
@@ -43,6 +48,55 @@ document.addEventListener('DOMContentLoaded', () => {
     displayPrizeLadder();
     startGameSession();
 });
+
+function isPageReload() {
+    const navigation = performance.getEntriesByType('navigation')[0];
+    return navigation ? navigation.type === 'reload' : performance.navigation?.type === 1;
+}
+
+async function startFreshGame(assignmentId) {
+    try {
+        document.getElementById('gameLoading').classList.remove('hidden');
+        document.getElementById('gameContent').classList.add('hidden');
+        document.getElementById('resultScreen').classList.add('hidden');
+
+        const response = await fetch('/api/game/start', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ assignmentId })
+        });
+
+        if (!response.ok) throw new Error('Failed to start game');
+
+        const data = await response.json();
+        sessionStorage.setItem('gameSessionId', data.sessionId);
+        sessionStorage.setItem('gameQuestions', JSON.stringify(data.questions));
+
+        gameState.sessionId = data.sessionId;
+        gameState.allQuestions = data.questions || [];
+        gameState.currentQuestionIndex = 0;
+        gameState.currentQuestion = null;
+        gameState.currentScore = 0;
+        gameState.safetyLevel = 0;
+        gameState.gameActive = true;
+        gameState.hintsUsed = 0;
+        gameState.fiftyFiftyUsed = false;
+        gameState.audiencePollUsed = false;
+
+        displayPrizeLadder();
+        displayFirstQuestion();
+    } catch (error) {
+        console.error('Error starting fresh game:', error);
+        showError(`Viga: ${error.message}`);
+    }
+}
+
+function clearStoredGameSession() {
+    sessionStorage.removeItem('gameSessionId');
+    sessionStorage.removeItem('gameQuestions');
+}
 
 /**
  * Start game session and fetch questions
@@ -229,6 +283,7 @@ async function answerQuestion(optionIndex) {
             enableAnswerButtons();
         } else {
             // Wrong answer - game over
+            clearStoredGameSession();
             showResult('💔 Vale vastus', `Õige vastus oli: ${currentQuestion.options[currentQuestion.correctIndex]}`, gameState.safetyLevel, false);
         }
     } catch (error) {
@@ -522,7 +577,9 @@ async function quitGame() {
  */
 function goHome() {
     sessionStorage.removeItem('gameSessionId');
+    sessionStorage.removeItem('selectedAssignmentId');
     sessionStorage.removeItem('assignmentTitle');
+    sessionStorage.removeItem('gameQuestions');
     window.location.href = '/';
 }
 
