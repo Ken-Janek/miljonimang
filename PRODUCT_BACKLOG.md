@@ -5,6 +5,23 @@ Luua veebirakendus, mis aitab õppijatel kontrollida enda arusaamist kodeerimis�
 
 ---
 
+## Backlogi staatus
+
+| Kasutajalugu | Staatus | Seotud töö |
+| --- | --- | --- |
+| Ülesannete nimekirja nägemine | Valmis | `assignmentService.js`, `assignments.js`, avaleht |
+| Ülesande valimine | Valmis | Avalehe kaardid ja mängu alustamine |
+| AI küsimuste genereerimine | Valmis | `aiService.js`, `prompts/question-generation.md` |
+| Miljonimängu mängimine | Valmis | `routes/game.js`, `public/js/game.js` |
+| Õlekõrte kasutamine | Valmis | Vihje, 50:50 ja publikuhääletus |
+| Uue ülesande lisamine | Valmis | `input/XXX/assignment.md` struktuur |
+| Selgituse nägemine pärast vastamist | Osaliselt valmis | Selgitus on andmemudelis olemas, UI kuvamine vajab järgmises iteratsioonis täiendust |
+| Tulemuste salvestamine | Tegemata | Jäi backlogi, vajab andmebaasi |
+| Kasutajate süsteem | Tegemata | Jäi backlogi, ei olnud MVP osa |
+| Õpetaja vaade | Tegemata | Jäi backlogi, sõltub tulemuste salvestamisest |
+
+---
+
 ## Kasutajalood ja Nõuded
 
 ### 1. Kasutajana tahan näha ülesannete nimekirja

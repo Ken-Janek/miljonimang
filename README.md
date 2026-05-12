@@ -21,6 +21,25 @@ Rakendus on juba juurutatud Railway platvormile ja on kättesaadav aadressil:
 
 > Rakendust pole vaja lokaalselt käivitada, ava lihtsalt Railway URL.
 
+## Hindamis- ja projektimaterjalid
+
+- [Product backlog](PRODUCT_BACKLOG.md)
+- [Definition of Done](DEFINITION_OF_DONE.md)
+- [Testimise dokumentatsioon](TESTING.md)
+- [AI küsimuste prompt](prompts/question-generation.md)
+- [Projektijuhtimine ja Kanban](docs/PROJECT_MANAGEMENT.md)
+- [Lõppdemo, nõuete täitmine ja tagasivaade](docs/FINAL_REVIEW.md)
+
+## Lõppdemo põhikasutusvoog
+
+1. Ava Railway rakendus.
+2. Vali avalehelt näidisülesanne.
+3. Rakendus loeb ülesande kirjelduse ja lahendusfailid.
+4. AI genereerib küsimused või fallback-küsimused.
+5. Mängi küsimustele vastates miljonimängu.
+6. Kasuta vajadusel vihjet, 50:50 või publiku hääletust.
+7. Mängu lõpus kuvatakse tulemus.
+
 ### Uute Ülesannete Lisamine
 
 Uute ülesannete lisamiseks:
