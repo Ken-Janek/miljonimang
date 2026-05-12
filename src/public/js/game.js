@@ -254,6 +254,8 @@ function loadNextQuestion(questionData) {
  * Display question content
  */
 function displayQuestionContent(questionData) {
+    clearQuestionPopups();
+
     document.getElementById('questionNumber').textContent = `Küsimus ${questionData.index + 1}/${questionData.totalQuestions}`;
     document.getElementById('questionLevel').textContent = `Taseme ${questionData.level}`;
     document.getElementById('questionText').textContent = questionData.question;
@@ -279,7 +281,23 @@ function clearAnswerOptions() {
     const options = document.querySelectorAll('.answer-option');
     options.forEach(option => {
         option.classList.remove('correct', 'incorrect', 'selected');
+        option.style.opacity = '';
     });
+}
+
+/**
+ * Clear temporary per-question UI elements
+ */
+function clearQuestionPopups() {
+    const hintBox = document.getElementById('hintBox');
+    const pollBox = document.getElementById('pollBox');
+    const hintText = document.getElementById('hintText');
+    const pollResults = document.getElementById('pollResults');
+
+    hintBox.classList.add('hidden');
+    pollBox.classList.add('hidden');
+    hintText.textContent = '';
+    pollResults.innerHTML = '';
 }
 
 /**
