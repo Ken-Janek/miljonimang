@@ -4,10 +4,11 @@ const path = require('path');
 
 // Initialize OpenAI only if a real API key is provided
 const openAiKey = process.env.OPENAI_API_KEY;
-const validOpenAiKey = openAiKey && !openAiKey.includes('your_api_key') && !openAiKey.includes('sk-your-');
-const client = validOpenAiKey ? new OpenAI({
-  apiKey: openAiKey
-}) : null;
+const trimmedOpenAiKey = openAiKey ? openAiKey.trim() : '';
+const invalidOpenAiKey = !trimmedOpenAiKey || trimmedOpenAiKey.includes('your_api_key') || trimmedOpenAiKey.startsWith('sk-your') || trimmedOpenAiKey.startsWith('sk-test');
+const client = invalidOpenAiKey ? null : new OpenAI({
+  apiKey: trimmedOpenAiKey
+});
 
 const MODEL = process.env.OPENAI_MODEL || 'gpt-3.5-turbo';
 const CACHE_DIR = path.join(__dirname, '..', '..', 'cache');
@@ -94,6 +95,10 @@ async function generateQuestions(assignment, solutionFiles) {
 
       const responseText = response.choices[0]?.message?.content || '';
       const questions = parseQuestionsFromResponse(responseText);
+
+      if (!Array.isArray(questions) || questions.length < 15) {
+        throw new Error('AI returned an invalid question set');
+      }
 
       // Randomize the questions each time (no caching)
       return randomizeQuestions(questions);

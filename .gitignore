@@ -8,6 +8,7 @@ yarn.lock
 .env
 .env.local
 .env.*.local
+src/services/OPENAI_API_KEY*.txt
 
 # IDE
 .vscode/
