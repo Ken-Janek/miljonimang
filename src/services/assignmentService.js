@@ -2,6 +2,7 @@ const fs = require('fs-extra');
 const path = require('path');
 
 const INPUT_DIR = path.join(__dirname, '..', '..', 'input');
+const HIDDEN_ASSIGNMENT_IDS = new Set(['002', '003']);
 
 /**
  * Get all assignments from input directory
@@ -17,7 +18,7 @@ async function getAllAssignments() {
     const assignments = [];
 
     for (const entry of entries) {
-      if (entry.isDirectory() && /^\d{3}$/.test(entry.name)) {
+      if (entry.isDirectory() && /^\d{3}$/.test(entry.name) && !HIDDEN_ASSIGNMENT_IDS.has(entry.name)) {
         const assignmentPath = path.join(INPUT_DIR, entry.name);
         const assignmentMdPath = path.join(assignmentPath, 'assignment.md');
 
