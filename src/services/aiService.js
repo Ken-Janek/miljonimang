@@ -54,6 +54,43 @@ function randomizeQuestions(questions) {
   });
 }
 
+function countWords(text) {
+  return String(text)
+    .trim()
+    .split(/\s+/)
+    .filter(Boolean)
+    .length;
+}
+
+function hasBalancedOptions(question) {
+  if (!question || !Array.isArray(question.options) || question.options.length !== 4) {
+    return false;
+  }
+
+  const lengths = question.options.map(countWords);
+  const correctLength = lengths[question.correctIndex];
+  const longestLength = Math.max(...lengths);
+  const shortestLength = Math.min(...lengths);
+  const wrongLengths = lengths.filter((_, index) => index !== question.correctIndex);
+  const longestWrongLength = Math.max(...wrongLengths);
+  const shortestWrongLength = Math.min(...wrongLengths);
+
+  return longestLength - shortestLength <= 3 &&
+    correctLength <= longestWrongLength + 1 &&
+    correctLength >= shortestWrongLength - 1;
+}
+
+function validateQuestionSet(questions) {
+  if (!Array.isArray(questions) || questions.length < 15) {
+    throw new Error('AI returned an invalid question set');
+  }
+
+  const obviousQuestions = questions.filter(question => !hasBalancedOptions(question));
+  if (obviousQuestions.length > 2) {
+    throw new Error('AI returned answer options with obvious length patterns');
+  }
+}
+
 /**
  * Generate questions for an assignment
  */
@@ -96,9 +133,7 @@ async function generateQuestions(assignment, solutionFiles) {
       const responseText = response.choices[0]?.message?.content || '';
       const questions = parseQuestionsFromResponse(responseText);
 
-      if (!Array.isArray(questions) || questions.length < 15) {
-        throw new Error('AI returned an invalid question set');
-      }
+      validateQuestionSet(questions);
 
       // Randomize the questions each time (no caching)
       return randomizeQuestions(questions);
@@ -141,13 +176,15 @@ NÕUDED:
 6. Ainult üks vastus on õige
 7. Küsimused peavad kontrolliva arusaamist, mitte ainult mälu
 8. Vastusevariandid peavad olema usutavad ja loogiliselt seotud küsimusega
-9. KÕIK vastusevariandid peavad olema SAMADE pikkustega (±2 sõna)
-10. Õige vastus EI TOHI olla pikem/lühem kui valed vastused
-11. Vastusevariandid peavad olema sarnase keerukusastmega
-12. EI OLE võimalik õiget vastust ära arvata pikkuse, sõnastuse või emotssiooni järgi
+9. KÕIK vastusevariandid peavad olema sarnase pikkusega (maksimaalselt 3 sõna erinevust)
+10. Õige vastus EI TOHI olla ainus pikk, detailne või tehniliselt täpne variant
+11. Vastusevariandid peavad olema sama vormiga: kui üks algab tegusõnaga, peavad kõik algama sarnaselt
+12. EI OLE võimalik õiget vastust ära arvata pikkuse, sõnastuse, detailsuse või emotsiooni järgi
 13. Ära kasuta triviaalset või äärmuslikku sõnastust nagu "Ainult ...", "Kunagi ...", "Kõik ...", "Pole vaja" või "Kõik need peale ühte"
-14. Iga vale vastus peab olema tegelikult plausible vigane lahendus või vale arusaam teemast
-15. Kui sa ei suuda koostada 4 usutavat vastusevarianti, muuda küsimust nii, et kõigil vastustel oleks tasaväärne loogika
+14. Iga vale vastus peab olema usutav vigane lahendus või tüüpiline vale arusaam teemast
+15. Vale vastus ei tohi olla naljakas, teemast väljas ega ilmselgelt absurdne
+16. Kui sa ei suuda koostada 4 usutavat vastusevarianti, muuda küsimust nii, et kõigil vastustel oleks tasaväärne loogika
+17. Enne vastamist kontrolli iga küsimust: õige variant ei tohi olla pikim rohkem kui 1 sõna võrra
 
 VÄLJUNDVORMING:
 Tagasta AINULT JSON array, ilma selgitavate tekstideta:
@@ -171,6 +208,24 @@ TÄHTIS: Tagasta AINULT JSON, mitte midagi muud!`;
  * Generate mock questions for testing (when API key is not available)
  */
 function generateMockQuestions(assignmentTitle) {
+  return [
+    { level: 1, question: "Millist tüüpi rakendus tuleb ülesandes luua?", options: ["Kalkulaatori veebirakendus", "Tekstiredaktori veebirakendus", "Kalendri veebirakendus", "Märkmiku veebirakendus"], correctIndex: 0, explanation: "Ülesanne keskendub kalkulaatori veebirakenduse loomisele." },
+    { level: 1, question: "Millised põhitehted peavad olemas olema?", options: ["Liitmine ja lahutamine", "Korrutamine ja jagamine", "Neli põhilist arvutust", "Astmendamine ja juurimine"], correctIndex: 2, explanation: "Kalkulaator peab toetama nelja põhilist aritmeetilist tehet." },
+    { level: 2, question: "Mida peaks lahendus tegema nulliga jagamisel?", options: ["Kuvama selge veateate", "Tagastama viimase tulemuse", "Tühjendama kõik väljad", "Kordama eelmist tehet"], correctIndex: 0, explanation: "Nulliga jagamine peab olema eraldi kontrollitud ja kasutajale arusaadavalt kuvatud." },
+    { level: 2, question: "Millised failid moodustavad tüüpilise lahenduse?", options: ["HTML, CSS ja JavaScript", "Markdown, JSON ja CSS", "HTML, JSON ja README", "JavaScript, PNG ja HTML"], correctIndex: 0, explanation: "Veebirakendus koosneb tavaliselt struktuurist, kujundusest ja käitumisloogikast." },
+    { level: 3, question: "Kuidas kasutaja arvutuse käivitab?", options: ["Valib nupu või tehte", "Muudab brauseri seadeid", "Laeb faili üles", "Avab eraldi konsooli"], correctIndex: 0, explanation: "Kasutaja peaks saama arvutuse käivitada kasutajaliidese kaudu." },
+    { level: 6, question: "Milleks kasutatakse event listenereid?", options: ["Kasutaja tegevuste püüdmiseks", "CSS värvide salvestamiseks", "HTML failide pakkimiseks", "Lehe fondi vahetamiseks"], correctIndex: 0, explanation: "Event listenerid seovad kasutaja klikid või sisestused JavaScripti loogikaga." },
+    { level: 6, question: "Miks tuleb sisend enne arvutust kontrollida?", options: ["Vigaste väärtuste vältimiseks", "Nuppude suuruse muutmiseks", "Failinimede lühendamiseks", "Taustavärvi valimiseks"], correctIndex: 0, explanation: "Kontroll aitab vältida tühje, valesid või arvuks teisendamatuid sisendeid." },
+    { level: 7, question: "Kuhu sobib arvutuse tulemus kuvada?", options: ["Eraldi tulemuse väljale", "Lehe meta kirjeldusse", "CSS klassi nimesse", "Faili laiendi sisse"], correctIndex: 0, explanation: "Tulemus peab olema kasutajaliideses selgelt nähtav." },
+    { level: 8, question: "Mis teeb koodi lihtsamini hooldatavaks?", options: ["Selged nimed ja jaotus", "Pikad nimetud funktsioonid", "Korduvad arvutusplokid", "Peidetud kasutajasisend"], correctIndex: 0, explanation: "Loetav struktuur ja selged nimed aitavad lahendust mõista ja parandada." },
+    { level: 9, question: "Millist juhtumit tuleks kindlasti testida?", options: ["Jagamist nulliga", "Pealkirja värvimist", "Akna laiuse muutmist", "Lehe ikooni asendust"], correctIndex: 0, explanation: "Nulliga jagamine on kalkulaatori oluline veajuhtum." },
+    { level: 11, question: "Mis võib põhjustada vale arvutustulemuse?", options: ["Sisendi jätmine tekstiks", "Nupu värvi muutmine", "Pealkirja keskele panek", "Äärise raadiuse muutus"], correctIndex: 0, explanation: "Kui sisend jääb tekstiks, võib arvutusloogika anda ootamatu tulemuse." },
+    { level: 11, question: "Kuidas peaks lahendus käsitlema kümnendmurde?", options: ["Arvutama need korrektselt", "Ümardama enne sisestust", "Keelama kõik komad", "Peitma tulemuse välja"], correctIndex: 0, explanation: "Hea kalkulaator töötab ka kümnendmurdudega, kui ülesanne seda eeldab." },
+    { level: 12, question: "Miks on eraldi arvutusfunktsioon kasulik?", options: ["Loogikat saab testida", "CSS muutub lühemaks", "HTML laadib pilte", "Brauser vahetab keelt"], correctIndex: 0, explanation: "Eraldi funktsiooni on lihtsam testida ja taaskasutada." },
+    { level: 13, question: "Kuidas peaks negatiivseid arve käsitlema?", options: ["Lubama tavapärase arvutusena", "Muutma need positiivseks", "Kustutama enne arvutust", "Asendama need nulliga"], correctIndex: 0, explanation: "Negatiivsed arvud on tavalised arvväärtused ja peaksid töötama korrektselt." },
+    { level: 15, question: "Mis on lahenduse kvaliteedi kõige parem märk?", options: ["Õige tulemus ja veakontroll", "Hele taust ja vari", "Palju ikoone reas", "Väga suur pealkiri"], correctIndex: 0, explanation: "Kõige olulisem on korrektne loogika, selge kasutajasisend ja vigade käsitlemine." }
+  ];
+
   const mockQuestions = [
     // Level 1-5: Lihtne - Põhikontseptsioonid
     { level: 1, question: "Millised operatsioonid peab kalkulaator toetama?", options: ["Ainult liitmine", "Liitmine, lahutamine, korrutamine, jagamine", "Ainult korrutamine", "Ruutjuur ja astendamine"], correctIndex: 1, explanation: "Ülesande nõudmiste järgi peab kalkulaator toetama 4 põhioperatsiooni." },
