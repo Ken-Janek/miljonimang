@@ -44,7 +44,7 @@ async function startGameSession() {
 
         const response = await fetch(`/api/game/state/${gameState.sessionId}`);
         if (!response.ok) {
-            throw new Error('Mangu seanssi ei leitud. Alusta mangu uuesti avalehelt.');
+            throw new Error('Mängu seanssi ei leitud. Alusta mängu uuesti avalehelt.');
         }
 
         const data = await response.json();
@@ -91,9 +91,9 @@ function displayPrizeLadder() {
 function renderSidebar() {
     const sidebar = document.getElementById('gameSidebarContent');
     sidebar.innerHTML = `
-        <p><strong>Ulesanne:</strong> ${escapeHtml(gameState.assignmentTitle || 'Valimata')}</p>
+        <p><strong>Ülesanne:</strong> ${escapeHtml(gameState.assignmentTitle || 'Valimata')}</p>
         <p><strong>Turvatasemed:</strong> 1 000, 32 000 ja 1 000 000</p>
-        <p><strong>Reegel:</strong> vale vastus lopetab mangu ja tulemus langeb viimasele turvatasemele.</p>
+        <p><strong>Reegel:</strong> vale vastus lõpetab mängu ja tulemus langeb viimasele turvatasemele.</p>
     `;
 }
 
@@ -108,7 +108,7 @@ function displayQuestionContent(question, index) {
     clearQuestionPopups();
     hideNextButton();
 
-    document.getElementById('questionNumber').textContent = `Kusimus ${index + 1}/${gameState.totalQuestions}`;
+    document.getElementById('questionNumber').textContent = `Küsimus ${index + 1}/${gameState.totalQuestions}`;
     document.getElementById('questionLevel').textContent = `Tase ${question.level}`;
     document.getElementById('questionText').textContent = question.question;
 
@@ -144,7 +144,7 @@ async function answerQuestion(optionIndex) {
         });
 
         if (!response.ok) {
-            throw new Error('Vastuse kontrollimine ebaonnestus');
+            throw new Error('Vastuse kontrollimine ebaõnnestus');
         }
 
         const data = await response.json();
@@ -162,7 +162,7 @@ async function answerQuestion(optionIndex) {
 
             if (data.gameState === 'won') {
                 clearStoredGameSession();
-                showResult('Palju onne!', data.message, data.finalScore, 15, data.explanation);
+                showResult('Palju õnne!', data.message, data.finalScore, 15, data.explanation);
                 return;
             }
 
@@ -175,14 +175,14 @@ async function answerQuestion(optionIndex) {
         clearStoredGameSession();
         showResult(
             'Vale vastus',
-            `Oige vastus oli: ${currentQuestion.options[currentQuestion.correctIndex]}`,
+            `Õige vastus oli: ${currentQuestion.options[currentQuestion.correctIndex]}`,
             data.finalScore,
             gameState.currentQuestionIndex + 1,
             data.explanation
         );
     } catch (error) {
         console.error('Error answering question:', error);
-        alert(`Viga vastuse tootlemisel: ${error.message}`);
+        alert(`Viga vastuse töötlemisel: ${error.message}`);
         gameState.gameActive = true;
         enableAnswerButtons();
     }
@@ -354,7 +354,7 @@ async function askAudience() {
 
         const data = await response.json();
         if (!data.success) {
-            throw new Error(data.error || 'Publikuhaaletus ei ole saadaval');
+            throw new Error(data.error || 'Publikuhääletus ei ole saadaval');
         }
 
         displayPoll(data.poll);
@@ -384,7 +384,7 @@ function displayPoll(poll) {
 }
 
 async function quitGame() {
-    if (!confirm('Oled kindel, et soovid mangu lopetada?')) {
+    if (!confirm('Oled kindel, et soovid mängu lõpetada?')) {
         return;
     }
 
@@ -398,12 +398,12 @@ async function quitGame() {
         });
 
         if (!response.ok) {
-            throw new Error('Mangu lopetamine ebaonnestus');
+            throw new Error('Mängu lõpetamine ebaõnnestus');
         }
 
         const data = await response.json();
         clearStoredGameSession();
-        showResult('Mang lopetatud', data.message, data.finalScore, gameState.currentQuestionIndex, '');
+        showResult('Mäng lõpetatud', data.message, data.finalScore, gameState.currentQuestionIndex, '');
     } catch (error) {
         console.error('Error quitting game:', error);
         alert(error.message);
@@ -420,8 +420,8 @@ function showResult(title, message, finalScore, answeredCount, explanation) {
     const details = document.getElementById('resultDetails');
     const explanationHtml = explanation ? `<p><strong>Selgitus:</strong> ${escapeHtml(explanation)}</p>` : '';
     details.innerHTML = `
-        <p><strong>Loppskoor:</strong> ${formatPoints(finalScore)}</p>
-        <p><strong>Vastatud kusimusi:</strong> ${answeredCount}/15</p>
+        <p><strong>Lõppskoor:</strong> ${formatPoints(finalScore)}</p>
+        <p><strong>Vastatud küsimusi:</strong> ${answeredCount}/15</p>
         ${explanationHtml}
     `;
 }
