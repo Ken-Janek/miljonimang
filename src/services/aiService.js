@@ -2,10 +2,13 @@ const { OpenAI } = require('openai');
 const fs = require('fs-extra');
 const path = require('path');
 
-// Initialize OpenAI only if a real API key is provided
 const openAiKey = process.env.OPENAI_API_KEY;
 const trimmedOpenAiKey = openAiKey ? openAiKey.trim() : '';
-const invalidOpenAiKey = !trimmedOpenAiKey || trimmedOpenAiKey.includes('your_api_key') || trimmedOpenAiKey.startsWith('sk-your') || trimmedOpenAiKey.startsWith('sk-test');
+const invalidOpenAiKey = !trimmedOpenAiKey ||
+  trimmedOpenAiKey.includes('your_api_key') ||
+  trimmedOpenAiKey.startsWith('sk-your') ||
+  trimmedOpenAiKey.startsWith('sk-test');
+
 const client = invalidOpenAiKey ? null : new OpenAI({
   apiKey: trimmedOpenAiKey
 });
@@ -13,9 +16,6 @@ const client = invalidOpenAiKey ? null : new OpenAI({
 const MODEL = process.env.OPENAI_MODEL || 'gpt-3.5-turbo';
 const CACHE_DIR = path.join(__dirname, '..', '..', 'cache');
 
-/**
- * Shuffle array randomly
- */
 function shuffleArray(array) {
   const shuffled = [...array];
   for (let i = shuffled.length - 1; i > 0; i--) {
@@ -25,30 +25,22 @@ function shuffleArray(array) {
   return shuffled;
 }
 
-/**
- * Randomize questions and their options
- */
 function randomizeQuestions(questions) {
-  // Shuffle the questions themselves
-  const shuffledQuestions = shuffleArray(questions).slice(0, 15); // Ensure exactly 15 questions
-  
-  // Shuffle options within each question and update correctIndex
+  const shuffledQuestions = shuffleArray(questions).slice(0, 15);
+
   return shuffledQuestions.map((question, index) => {
-    const optionsWithIndex = question.options.map((option, idx) => ({
+    const optionsWithIndex = question.options.map((option, optionIndex) => ({
       text: option,
-      originalIndex: idx
+      originalIndex: optionIndex
     }));
-    
-    // Shuffle the options
+
     const shuffledOptions = shuffleArray(optionsWithIndex);
-    
-    // Find the new index of the correct answer
-    const newCorrectIndex = shuffledOptions.findIndex(opt => opt.originalIndex === question.correctIndex);
-    
+    const newCorrectIndex = shuffledOptions.findIndex((option) => option.originalIndex === question.correctIndex);
+
     return {
       ...question,
-      index: index,
-      options: shuffledOptions.map(opt => opt.text),
+      index,
+      options: shuffledOptions.map((option) => option.text),
       correctIndex: newCorrectIndex
     };
   });
@@ -85,7 +77,7 @@ function validateQuestionSet(questions) {
     throw new Error('AI returned an invalid question set');
   }
 
-  const obviousQuestions = questions.filter(question => !hasBalancedOptions(question));
+  const obviousQuestions = questions.filter((question) => !hasBalancedOptions(question));
   if (obviousQuestions.length > 2) {
     throw new Error('AI returned answer options with obvious length patterns');
   }
@@ -95,7 +87,7 @@ function maskAnswerInHint(text, answer) {
   if (!text || !answer) return text;
 
   const escapedAnswer = String(answer).replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-  return text.replace(new RegExp(escapedAnswer, 'gi'), 'õige variandiga');
+  return text.replace(new RegExp(escapedAnswer, 'gi'), 'oige variandiga');
 }
 
 function generateLocalHint(question) {
@@ -106,69 +98,54 @@ function generateLocalHint(question) {
 
   const hintRules = [
     {
-      keywords: ['nulliga', 'jagamisel', 'jagamist nulliga'],
-      hint: 'Keskendu erijuhtumile, kus tavaline arvutus ei ole lubatud. Hea lahendus annab kasutajale selge tagasiside, mitte juhusliku tulemuse.'
+      keywords: ['eventlistener', 'addeventlistener', 'klik', 'sundmus', 'listener'],
+      hint: 'Motle sellele, kuidas JavaScript saab teada, et kasutaja tegi mingi tegevuse. Otsi varianti, mis seob kasutaja tegevuse koodiga.'
     },
     {
-      keywords: ['event listener', 'listenereid', 'klikk', 'tegevuste'],
-      hint: 'Mõtle sellele, mis seob kasutaja nupuvajutuse JavaScripti koodiga. Õige mõte on seotud sündmuse kuulamisega, mitte kujundusega.'
+      keywords: ['dom', 'queryselector', 'element', 'innerhtml', 'textcontent'],
+      hint: 'Keskendu sellele, kuidas JavaScript leiab elemendi voi muudab lehel olevat sisu. Oige vastus puudutab kasutajaliidese muutmist koodi abil.'
     },
     {
-      keywords: ['sisend', 'tekstiks', 'väärtuste', 'kontrollida'],
-      hint: 'Vaata, kas vastus räägib kasutaja sisendi turvalisest ja korrektsest käsitlemisest. Kalkulaator ei saa usaldada iga sisestatud väärtust otse.'
+      keywords: ['parseint', 'number(', 'sisend', 'string', 'teisenda'],
+      hint: 'Motle sellele, mis tuupi andmed tulevad sisendvaljast ja miks neist ei pruugi kohe arvutada saada.'
     },
     {
-      keywords: ['failid', 'html', 'css', 'javascript'],
-      hint: 'Mõtle veebirakenduse kolmele põhikihile: struktuur, välimus ja käitumine. Õige vastus katab kõik need rollid.'
+      keywords: ['if', 'else', 'tingimus', 'kontroll', 'valideer'],
+      hint: 'Otsi varianti, mis selgitab otsustusloogikat. JavaScript peab enne tegevust kontrollima, kas sisend voi olukord on sobiv.'
     },
     {
-      keywords: ['kümnend', 'negatiiv', 'arve'],
-      hint: 'Mõtle, kas arv on ikkagi kehtiv sisend kalkulaatorile. Õige lahendus peaks käsitlema tavalisi arvutamise juhtumeid, mitte neid ära keelama.'
+      keywords: ['async', 'await', 'fetch', 'promise'],
+      hint: 'Siin on oluline, et JavaScript ootaks andmete saabumist voi tegeleks vastusega alles siis, kui see on kaes.'
     },
     {
-      keywords: ['testida', 'test'],
-      hint: 'Otsi vastust, mis kontrollib päris arvutusloogika riski. Välimuse muutused ei tõesta, et kalkulaator arvutab õigesti.'
-    },
-    {
-      keywords: ['hooldatav', 'kvaliteedi', 'funktsioon', 'loogikat'],
-      hint: 'Mõtle arendaja vaatenurgast: hea lahendus on lihtne kontrollida, muuta ja vigade korral parandada.'
-    },
-    {
-      keywords: ['tulemus', 'kuvada'],
-      hint: 'Kasutaja peab tulemust nägema otse kasutajaliideses. Õige vastus puudutab nähtavat väljundit, mitte lehe tehnilisi metaandmeid.'
+      keywords: ['error', 'try', 'catch', 'viga'],
+      hint: 'Keskendu sellele, kuidas JavaScript peaks kaituma siis, kui koik ei lahe plaaniparaselt.'
     }
   ];
 
-  const matchingRule = hintRules.find(rule => rule.keywords.some(keyword => combinedText.includes(keyword)));
-  const hint = matchingRule ? matchingRule.hint : 'Mõtle, milline variant lahendab küsimuses kirjeldatud tegeliku probleemi. Välista vastused, mis tegelevad ainult välimuse või kõrvalise detailiga.';
+  const matchingRule = hintRules.find((rule) => rule.keywords.some((keyword) => combinedText.includes(keyword)));
+  const hint = matchingRule
+    ? matchingRule.hint
+    : 'Motle sellele, milline variant seletab JavaScripti loogikat koige paremini. Valista vastused, mis raagivad ainult vaate valimusest.';
 
   return maskAnswerInHint(hint, correctAnswer);
 }
 
-/**
- * Generate questions for an assignment
- */
 async function generateQuestions(assignment, solutionFiles) {
   try {
-    // First, check if questions.json exists in assignment folder
     const questionsJsonPath = path.join(__dirname, '..', '..', 'input', assignment.id, 'questions.json');
     if (fs.existsSync(questionsJsonPath)) {
       console.log(`[Loaded] Using questions.json for ${assignment.id}`);
       const questionsData = await fs.readJson(questionsJsonPath);
-      // Randomize the questions each time
       return randomizeQuestions(questionsData);
     }
 
-    // Skip cache - always generate fresh questions
     console.log(`[AI Generation] Generating fresh questions for ${assignment.id}...`);
+
     if (!client) {
       console.log(`[Mock Mode] Generating mock questions for ${assignment.id}...`);
-      const mockQuestions = generateAssignmentBasedMockQuestions(assignment, solutionFiles);
-      // Randomize the questions each time (no caching)
-      return randomizeQuestions(mockQuestions);
+      return randomizeQuestions(generateAssignmentBasedMockQuestions(assignment, solutionFiles));
     }
-
-    console.log(`[OpenAI] Generating questions for assignment ${assignment.id}...`);
 
     const prompt = buildQuestionPrompt(assignment, solutionFiles);
 
@@ -186,15 +163,12 @@ async function generateQuestions(assignment, solutionFiles) {
 
       const responseText = response.choices[0]?.message?.content || '';
       const questions = parseQuestionsFromResponse(responseText);
-
       validateQuestionSet(questions);
 
-      // Randomize the questions each time (no caching)
       return randomizeQuestions(questions);
     } catch (error) {
       console.warn('[OpenAI] Failed to generate questions, falling back to mock mode:', error.message);
-      const mockQuestions = generateAssignmentBasedMockQuestions(assignment, solutionFiles);
-      return randomizeQuestions(mockQuestions);
+      return randomizeQuestions(generateAssignmentBasedMockQuestions(assignment, solutionFiles));
     }
   } catch (error) {
     console.error('Error generating questions:', error);
@@ -202,9 +176,6 @@ async function generateQuestions(assignment, solutionFiles) {
   }
 }
 
-/**
- * Build the prompt for question generation
- */
 function buildQuestionPrompt(assignment, solutionFiles) {
   let solutionContext = 'LAHENDUSE FAILID:\n\n';
 
@@ -214,7 +185,7 @@ function buildQuestionPrompt(assignment, solutionFiles) {
     solutionContext += '\n';
   }
 
-  const prompt = `Sa oled hariduslik AI assistendid. Sinu ülesanne on luua 15 valikvastustega küsimust, mis kontrollida õppija arusaamist ülesandest ja selle lahendusest.
+  return `Sa oled hariduslik AI assistent. Sinu ülesanne on luua 15 valikvastustega küsimust, mis kontrollivad õppija arusaamist ülesandest ja selle lahendusest.
 
 ÜLESANDE KIRJELDUS:
 ${assignment.assignment}
@@ -222,26 +193,24 @@ ${assignment.assignment}
 ${solutionContext}
 
 NÕUDED:
-1. Genereeri täpselt 15 küsimust
-2. Küsimused 1-5 on lihtsad (põhikontseptsioonid)
-3. Küsimused 6-10 on keskmise raskusega (sisemine loogika)
-4. Küsimused 11-15 on rasked (sügav arusaamine, vigade leidmine)
-5. Igal küsimusel peab olema 4 vastusevarianti
-6. Ainult üks vastus on õige
-7. Küsimused peavad kontrolliva arusaamist, mitte ainult mälu
-8. Vastusevariandid peavad olema usutavad ja loogiliselt seotud küsimusega
-9. KÕIK vastusevariandid peavad olema sarnase pikkusega (maksimaalselt 3 sõna erinevust)
-10. Õige vastus EI TOHI olla ainus pikk, detailne või tehniliselt täpne variant
-11. Vastusevariandid peavad olema sama vormiga: kui üks algab tegusõnaga, peavad kõik algama sarnaselt
-12. EI OLE võimalik õiget vastust ära arvata pikkuse, sõnastuse, detailsuse või emotsiooni järgi
-13. Ära kasuta triviaalset või äärmuslikku sõnastust nagu "Ainult ...", "Kunagi ...", "Kõik ...", "Pole vaja" või "Kõik need peale ühte"
-14. Iga vale vastus peab olema usutav vigane lahendus või tüüpiline vale arusaam teemast
-15. Vale vastus ei tohi olla naljakas, teemast väljas ega ilmselgelt absurdne
-16. Kui sa ei suuda koostada 4 usutavat vastusevarianti, muuda küsimust nii, et kõigil vastustel oleks tasaväärne loogika
-17. Enne vastamist kontrolli iga küsimust: õige variant ei tohi olla pikim rohkem kui 1 sõna võrra
+1. Genereeri täpselt 15 küsimust.
+2. Küsimused 1-5 on lihtsad, 6-10 keskmised ja 11-15 rasked.
+3. Igal küsimusel peab olema 4 vastusevarianti ja ainult 1 õige vastus.
+4. Küsimused peavad kontrollima arusaamist, mitte ainult mälu.
+5. Küsimused peavad olema eelkõige JavaScripti kohta.
+6. Keskendu sündmustele, funktsioonidele, muutujatele, tingimuslausetele, DOM-i muutmisele, andmete töötlemisele, sisendi valideerimisele, asünkroonsusele ja vigade käsitlemisele.
+7. Kui HTML või CSS on kaasatud, kasuta neid ainult siis, kui need on otseselt seotud JavaScripti käitumisega.
+8. Väldi küsimusi, mis küsivad ainult faili nime, HTML elemendi nime või kujunduse detaili kohta ilma JavaScripti loogikata.
+9. Vastusevariandid peavad olema usutavad ja loogiliselt seotud küsimusega.
+10. KÕIK vastusevariandid peavad olema sarnase pikkusega, maksimaalselt 3 sõna erinevusega.
+11. Õige vastus ei tohi olla ainus pikk, detailne või tehniliselt täpne variant.
+12. Vastusevariandid peavad olema sama vormiga.
+13. Õiget vastust ei tohi olla võimalik ära arvata pikkuse, sõnastuse, detailsuse või emotsiooni järgi.
+14. Iga vale vastus peab olema usutav vale arusaam või vigane lahendus.
+15. Kui sa ei suuda koostada 4 usutavat varianti, muuda küsimust nii, et kõigil vastustel oleks võrdne loogiline tase.
 
 VÄLJUNDVORMING:
-Tagasta AINULT JSON array, ilma selgitavate tekstideta:
+Tagasta AINULT JSON array ilma muu tekstita:
 
 [
   {
@@ -253,121 +222,46 @@ Tagasta AINULT JSON array, ilma selgitavate tekstideta:
   }
 ]
 
-TÄHTIS: Tagasta AINULT JSON, mitte midagi muud!`;
-
-  return prompt;
+TÄHTIS: küsimused peavad olema JavaScripti kohta. Tagasta AINULT JSON, mitte midagi muud!`;
 }
 
-/**
- * Generate mock questions for testing (when API key is not available)
- */
-function generateMockQuestions(assignmentTitle) {
+function generateMockQuestions() {
   return [
-    { level: 1, question: "Millist tüüpi rakendus tuleb ülesandes luua?", options: ["Kalkulaatori veebirakendus", "Tekstiredaktori veebirakendus", "Kalendri veebirakendus", "Märkmiku veebirakendus"], correctIndex: 0, explanation: "Ülesanne keskendub kalkulaatori veebirakenduse loomisele." },
-    { level: 1, question: "Millised põhitehted peavad olemas olema?", options: ["Liitmine ja lahutamine", "Korrutamine ja jagamine", "Neli põhilist arvutust", "Astmendamine ja juurimine"], correctIndex: 2, explanation: "Kalkulaator peab toetama nelja põhilist aritmeetilist tehet." },
-    { level: 2, question: "Mida peaks lahendus tegema nulliga jagamisel?", options: ["Kuvama selge veateate", "Tagastama viimase tulemuse", "Tühjendama kõik väljad", "Kordama eelmist tehet"], correctIndex: 0, explanation: "Nulliga jagamine peab olema eraldi kontrollitud ja kasutajale arusaadavalt kuvatud." },
-    { level: 2, question: "Millised failid moodustavad tüüpilise lahenduse?", options: ["HTML, CSS ja JavaScript", "Markdown, JSON ja CSS", "HTML, JSON ja README", "JavaScript, PNG ja HTML"], correctIndex: 0, explanation: "Veebirakendus koosneb tavaliselt struktuurist, kujundusest ja käitumisloogikast." },
-    { level: 3, question: "Kuidas kasutaja arvutuse käivitab?", options: ["Valib nupu või tehte", "Muudab brauseri seadeid", "Laeb faili üles", "Avab eraldi konsooli"], correctIndex: 0, explanation: "Kasutaja peaks saama arvutuse käivitada kasutajaliidese kaudu." },
-    { level: 6, question: "Milleks kasutatakse event listenereid?", options: ["Kasutaja tegevuste püüdmiseks", "CSS värvide salvestamiseks", "HTML failide pakkimiseks", "Lehe fondi vahetamiseks"], correctIndex: 0, explanation: "Event listenerid seovad kasutaja klikid või sisestused JavaScripti loogikaga." },
-    { level: 6, question: "Miks tuleb sisend enne arvutust kontrollida?", options: ["Vigaste väärtuste vältimiseks", "Nuppude suuruse muutmiseks", "Failinimede lühendamiseks", "Taustavärvi valimiseks"], correctIndex: 0, explanation: "Kontroll aitab vältida tühje, valesid või arvuks teisendamatuid sisendeid." },
-    { level: 7, question: "Kuhu sobib arvutuse tulemus kuvada?", options: ["Eraldi tulemuse väljale", "Lehe meta kirjeldusse", "CSS klassi nimesse", "Faili laiendi sisse"], correctIndex: 0, explanation: "Tulemus peab olema kasutajaliideses selgelt nähtav." },
-    { level: 8, question: "Mis teeb koodi lihtsamini hooldatavaks?", options: ["Selged nimed ja jaotus", "Pikad nimetud funktsioonid", "Korduvad arvutusplokid", "Peidetud kasutajasisend"], correctIndex: 0, explanation: "Loetav struktuur ja selged nimed aitavad lahendust mõista ja parandada." },
-    { level: 9, question: "Millist juhtumit tuleks kindlasti testida?", options: ["Jagamist nulliga", "Pealkirja värvimist", "Akna laiuse muutmist", "Lehe ikooni asendust"], correctIndex: 0, explanation: "Nulliga jagamine on kalkulaatori oluline veajuhtum." },
-    { level: 11, question: "Mis võib põhjustada vale arvutustulemuse?", options: ["Sisendi jätmine tekstiks", "Nupu värvi muutmine", "Pealkirja keskele panek", "Äärise raadiuse muutus"], correctIndex: 0, explanation: "Kui sisend jääb tekstiks, võib arvutusloogika anda ootamatu tulemuse." },
-    { level: 11, question: "Kuidas peaks lahendus käsitlema kümnendmurde?", options: ["Arvutama need korrektselt", "Ümardama enne sisestust", "Keelama kõik komad", "Peitma tulemuse välja"], correctIndex: 0, explanation: "Hea kalkulaator töötab ka kümnendmurdudega, kui ülesanne seda eeldab." },
-    { level: 12, question: "Miks on eraldi arvutusfunktsioon kasulik?", options: ["Loogikat saab testida", "CSS muutub lühemaks", "HTML laadib pilte", "Brauser vahetab keelt"], correctIndex: 0, explanation: "Eraldi funktsiooni on lihtsam testida ja taaskasutada." },
-    { level: 13, question: "Kuidas peaks negatiivseid arve käsitlema?", options: ["Lubama tavapärase arvutusena", "Muutma need positiivseks", "Kustutama enne arvutust", "Asendama need nulliga"], correctIndex: 0, explanation: "Negatiivsed arvud on tavalised arvväärtused ja peaksid töötama korrektselt." },
-    { level: 15, question: "Mis on lahenduse kvaliteedi kõige parem märk?", options: ["Õige tulemus ja veakontroll", "Hele taust ja vari", "Palju ikoone reas", "Väga suur pealkiri"], correctIndex: 0, explanation: "Kõige olulisem on korrektne loogika, selge kasutajasisend ja vigade käsitlemine." }
+    { level: 1, question: 'Miks kasutatakse JavaScriptis addEventListener meetodit?', options: ['Et reageerida tegevusele', 'Et muuta faili laiendit', 'Et peita brauser', 'Et kustutada CSS'], correctIndex: 0, explanation: 'addEventListener seob JavaScripti kasutaja tegevusega, näiteks klikiga.' },
+    { level: 1, question: 'Mida tagastab input valja value tavaliselt algselt?', options: ['Stringi vaartuse', 'Booleani vaartuse', 'Massiivi vaartuse', 'Objekti vaartuse'], correctIndex: 0, explanation: 'HTML sisendvaljad annavad JavaScripti jaoks vaikimisi stringi.' },
+    { level: 2, question: 'Miks kasutatakse querySelector meetodit?', options: ['Et leida DOM element', 'Et sorteerida massiiv', 'Et teha API voti', 'Et tihendada faili'], correctIndex: 0, explanation: 'querySelector aitab JavaScriptil leida lehelt vajaliku elemendi.' },
+    { level: 2, question: 'Milleks on kasulik tingimuslause if?', options: ['Et kontrollida olukorda', 'Et kujundada nuppu', 'Et muuta faili nime', 'Et avada uus sakk'], correctIndex: 0, explanation: 'if lubab JavaScriptil teha otsuseid sisendi voi oleku pohjal.' },
+    { level: 3, question: 'Miks teisendatakse kasutaja sisend Number abil arvuks?', options: ['Et arvutus toimiks korrektselt', 'Et HTML muutuks kiiremaks', 'Et CSS saaks laadida', 'Et server sulguks'], correctIndex: 0, explanation: 'Ilma teisenduseta voib JavaScript teha stringi uhendamist, mitte arvutust.' }
   ];
-
-  const mockQuestions = [
-    // Level 1-5: Lihtne - Põhikontseptsioonid
-    { level: 1, question: "Millised operatsioonid peab kalkulaator toetama?", options: ["Ainult liitmine", "Liitmine, lahutamine, korrutamine, jagamine", "Ainult korrutamine", "Ruutjuur ja astendamine"], correctIndex: 1, explanation: "Ülesande nõudmiste järgi peab kalkulaator toetama 4 põhioperatsiooni." },
-    
-    { level: 1, question: "Mis on ülesande eesmärk?", options: ["Muusika esitus", "Lihtne kalkulaator veebirakendus", "Foto redigeerimine", "Video streaming"], correctIndex: 1, explanation: "JavaScripti Kalkulaatori ülesande eesmärk on luua lihtne veebirakendus, mis teostab põhilisi matemaatilisi tehted." },
-    
-    { level: 2, question: "Kuidas peaks kalkulaator reageerima jagamisele nulliga?", options: ["Näitab juhuslikku numbrit", "Kutsub välja veateate", "Jätab ignoreerida", "Kuvab lõpmatus"], correctIndex: 1, explanation: "Nulliga jagamine peab olema kontrollitud ja veateadet peab kuvama." },
-    
-    { level: 2, question: "Millisest failist peaks koosistuma kalkulaatori lahendus?", options: ["Ainult HTML", "Ainult JavaScript", "HTML, CSS ja JavaScript", "Ainult CSS"], correctIndex: 2, explanation: "Lahendus peab sisaldama HTML vormile, CSS kujundusele ja JavaScript funktionaalsusele." },
-    
-    { level: 3, question: "Kuidas peaks kasutaja kalkulaatoriga suhtlema?", options: ["Käsureainterfeis", "Graafiline kasutajaliides arvude ja nuppudega", "Hääle abil", "Hiire liigutusega"], correctIndex: 1, explanation: "Kalkulaatoril peab olema HTML vorm kahe arvusisendi väljaga ja operatsioonide nupud." },
-    
-    // Level 6-10: Keskmise raskusega - Sisemine loogika
-    { level: 6, question: "Mis on event listeneri roll kalkulaatori lahenduses?", options: ["Dekoratsioon ainult", "Kasutaja klikkide ja sisendi jälgimine", "Põhivärvuse määramine", "Teksti suuruse muutmine"], correctIndex: 1, explanation: "Event listenerid on vajalikud kasutaja sisendi ja nuppude klikkide jälgimiseks." },
-    
-    { level: 6, question: "Kuidas peaks kalkulaator vale sisendi käsitsema?", options: ["Näitab mustast ekraani", "Kutsub välja veateate", "Jätab ignoreerida", "Peatab töö"], correctIndex: 1, explanation: "Vale sisend (mittearv) peab kutsuma välja veateate." },
-    
-    { level: 7, question: "Millises HTML elemendis peaks tulemust kuvatama?", options: ["<button>", "<input> väli", "<img>", "<audio>"], correctIndex: 1, explanation: "Tulemust peaks kuvatama HTML <input> väljal või väljundväljal." },
-    
-    { level: 8, question: "Kuidas eristada korrektset kasutajaliidesed projektis?", options: ["Tavade järgimine", "Kommentaarid ja struktureeritus", "Rohkem koodi", "Vähem koodi"], correctIndex: 1, explanation: "Kood peab olema loetav, hästi struktureeritud ja kommenteeritud." },
-    
-    { level: 9, question: "Millised testid on kriitilised kalkulaatori valideerimiseks?", options: ["Ainult positiivsete arvude test", "Kõik 4 operatsiooni, nulliga jagamine, vale sisend", "Üksnes liitmise test", "Värvide test"], correctIndex: 1, explanation: "Peab testima: kõiki 4 operatsiooni, nulliga jagamise kontrollimist, vale sisendi käsitlemist." },
-    
-    // Level 11-15: Raske - Sügav arusaamine ja vigade leidmine
-    { level: 11, question: "Millises olukorda võib kalkulaator andmeid kaotada?", options: ["Kunagi ei kaota", "Külalisele nupp vajutamise korral peale kustutamise", "Ainult väga külma ilmaga", "Kui kasutaja hiire ühendus lahti läheb"], correctIndex: 1, explanation: "Kustutamise nuppu vajutades tuleb andmed nullida, et vältida eksimusi." },
-    
-    { level: 11, question: "Kuidas peaks lahendus käituma väga suurte arvudega?", options: ["Näitab viga", "Töötab korrektselt erinevate suuruste arvudega", "Muutub aeglaseks", "Kuvab mustast"], correctIndex: 1, explanation: "Hea lahendus peaks käituma korrektselt erinevate suuruste arvudega." },
-    
-    { level: 12, question: "Kuidas testida kutsega funktioone JavaScript kalkulaatoris?", options: ["Ära testi", "Kasutaja sisendit simuleerimisega", "Juhuslikult", "Soovitusega"], correctIndex: 1, explanation: "Sisendi ja operatsioone tuleb testida erinevate väärtustega." },
-    
-    { level: 13, question: "Millised negatiivsete numbrite omadused peab kalkulaator toetama?", options: ["Pole vaja", "Liitmine, lahutamine, korrutamine, jagamine negatiivsete arvudega", "Ainult liitmine", "Ainult lahutamine"], correctIndex: 1, explanation: "Hea lahendus peab toetama negatiivseid numbreid kõigi operatsioonide jaoks." },
-    
-    { level: 14, question: "Kuidas lahendus peaks käituma kümnendkohadega?", options: ["Ei toeta kümnendkohti", "Toetab kümnendkohti kõigis operatsioonides", "Ainult liitmises", "Ainult lahutamises"], correctIndex: 1, explanation: "Täiuslik lahendus toetab kümnendkohti kõigis matemaatilistes operatsioonides." },
-    
-    { level: 15, question: "Mis on olulisim aspekt kalkulaatori koodi arenduses?", options: ["Ainult kiirus", "Õigsus, loetavus ja vigade käsitlemine", "Ainult kuidas see välja näeb", "Kommentaaride hulk"], correctIndex: 1, explanation: "Hea kood kombineerib õigsust, loetavust, veakäsitlemist ja hallatavust." }
-  ];
-  
-  return mockQuestions;
 }
 
 function generateAssignmentBasedMockQuestions(assignment, solutionFiles) {
-  const title = assignment.title || `Ülesanne ${assignment.id}`;
-  const fileNames = solutionFiles.map(file => file.name);
-  const extensions = [...new Set(solutionFiles.map(file => file.extension).filter(Boolean))];
-  const firstFile = fileNames[0] || 'lahendusfail';
-  const secondFile = fileNames[1] || firstFile;
+  const title = assignment.title || `Ulesanne ${assignment.id}`;
+  const jsFiles = solutionFiles.filter((file) => file.extension === 'js');
+  const primaryJsFile = jsFiles[0]?.name || 'script.js';
+  const secondaryJsFile = jsFiles[1]?.name || primaryJsFile;
 
   return [
-    { level: 1, question: `Mis on ülesande "${title}" peamine eesmärk?`, options: ['Lahenduse mõistmise kontroll', 'Brauseri seadete muutmine', 'Serveri kustutamine', 'Failide peitmine'], correctIndex: 0, explanation: 'Selle rakenduse küsimused peavad kontrollima, kas kasutaja saab ülesande lahendusest aru.' },
-    { level: 1, question: 'Milline fail on iga ülesande juures kohustuslik?', options: ['assignment.md', 'results.json', 'server.log', 'notes.txt'], correctIndex: 0, explanation: 'assignment.md sisaldab ülesande kirjeldust, nõudeid ja hindamiskriteeriume.' },
-    { level: 2, question: `Miks loetakse lisaks assignment.md failile ka "${firstFile}" sisu?`, options: ['Et näha päris teostust', 'Et muuta faili nime', 'Et peita punktitabel', 'Et asendada README'], correctIndex: 0, explanation: 'Lahendusfailid annavad AI-le vajaliku konteksti küsimuste koostamiseks.' },
-    { level: 2, question: `Mida ütleb failide loend ${extensions.join(', ') || 'mitme faili'} kohta kõige paremini?`, options: [inferPrimaryStack(extensions), 'Projektis pole loogikat', 'Projekt on ainult andmebaas', 'Projekt on ainult pildikogu'], correctIndex: 0, explanation: 'Faililaiendid annavad vihje, milliste tehnoloogiatega lahendus on tehtud.' },
-    { level: 3, question: `Miks on kasulik, et ülesande failid nagu "${secondFile}" kaasatakse analüüsi?`, options: ['Küsimused saavad olla sisulisemad', 'Punktid muutuvad suuremaks', 'Vastus on alati A', 'Mäng lõpeb kiiremini'], correctIndex: 0, explanation: 'Kui AI näeb ka lahendusfaile, saab ta kontrollida loogikat, mitte ainult kirjeldust.' },
-    { level: 6, question: 'Miks ei piisa ainult faili nimede põhjal küsimuste koostamisest?', options: ['See ei näita lahenduse loogikat', 'See muudab CSS aeglaseks', 'See kustutab markdowni', 'See peatab serveri'], correctIndex: 0, explanation: 'Arusaamise kontrollimiseks peab küsimus põhinema päris sisul ja teostusel.' },
-    { level: 6, question: 'Mida peaks hea keskmise raskusega küsimus kõige tõenäolisemalt kontrollima?', options: ['Andmevoogu või sisemist loogikat', 'Ainult kausta värvi', 'Ainult faili suurust', 'Ainult commiti kuupäeva'], correctIndex: 0, explanation: 'Keskmise taseme küsimused peavad minema sügavamale kui lihtsalt põhimõistete kordamine.' },
-    { level: 7, question: 'Milline risk tekib siis, kui küsimused kontrollivad ainult mälu?', options: ['Vastused saab pähe õppida', 'Server ei käivitu', 'Nupud kaovad', 'HTML muutub JSON-iks'], correctIndex: 0, explanation: 'Sellisel juhul ei saa enam hinnata, kas õppija päriselt saab lahendusest aru.' },
-    { level: 8, question: 'Miks on numbriliste alamkaustade kasutamine hea disainivalik?', options: ['Uusi ülesandeid on lihtne lisada', 'Kõik failid muutuvad lühemaks', 'AI-d pole enam vaja', 'Mängus kaob punktiarvestus'], correctIndex: 0, explanation: 'Selline struktuur teeb süsteemi edasiarendatavaks ja skaleeritavaks.' },
-    { level: 9, question: 'Millist asja peaks AI küsimuste loomisel kontrollima assignment.md ja koodi võrdluses?', options: ['Kas nõuded on päriselt täidetud', 'Kas failid on tähestikus', 'Kas kasutaja nimi on lühike', 'Kas brauser on täisekraanil'], correctIndex: 0, explanation: 'Oluline on võrrelda lähteülesannet tegeliku teostusega.' },
-    { level: 11, question: 'Mis on suurim puudus siis, kui AI näeb ainult assignment.md faili, aga mitte lahendusfaile?', options: ['Küsimused jäävad liiga üldiseks', 'Punktid ei saa väärtust', 'CSS failid kaovad', 'Publikuhääletus peatub'], correctIndex: 0, explanation: 'Ilma lahenduseta ei saa hinnata, kuidas õppija tegelik kood või failistruktuur töötab.' },
-    { level: 12, question: 'Kuidas parandada küsimuste kvaliteeti ilma päris API-ta fallback-režiimis?', options: ['Seostada küsimused valitud ülesandega', 'Näidata alati õiget vastust', 'Eemaldada kõik selgitused', 'Küsida ainult failinimesid'], correctIndex: 0, explanation: 'Hea fallback peab jääma sama ülesande konteksti, mitte muutuma juhuslikuks viktoriiniks.' },
-    { level: 13, question: 'Milline leid viitaks, et lahendus ei vasta assignment.md nõuetele?', options: ['Nõue ei kajastu teostuses', 'Failinimi on lühike', 'Kaustas on kaks faili', 'README on markdownis'], correctIndex: 0, explanation: 'Nõuete ja lahenduse vahelise vastuolu märkamine näitab sügavamat arusaamist.' },
-    { level: 14, question: 'Milline edasiarendus tugevdaks õpetaja vaates kõige rohkem selle rakenduse väärtust?', options: ['Tulemuste ja vigade ajaloo salvestus', 'Kõigi nuppude halliks värvimine', 'Küsimuste arvu vähendamine', 'assignment.md eemaldamine'], correctIndex: 0, explanation: 'Tulemuste ajalugu aitaks õpetajal näha, millised teemad on õppijatele rasked.' },
-    { level: 15, question: 'Milline fallback-käitumine toetab kõige paremini projekti algset eesmärki?', options: ['Ülesandepõhised varuküsimused', 'Täiesti juhuslikud küsimused', 'Kohe mängu lõpetamine', 'Tühi vastuseekraan'], correctIndex: 0, explanation: 'Ka varurežiimis peab süsteem kontrollima valitud ülesande mõistmist, mitte suvalisi fakte.' }
+    { level: 1, question: `Milline on faili "${primaryJsFile}" koige toenaolisem roll selles lahenduses?`, options: ['Rakenduse loogika juhtimine', 'Ainult kujunduse hoidmine', 'Pildifailide salvestamine', 'Serveri paigaldamine'], correctIndex: 0, explanation: 'JavaScripti fail kannab tavaliselt rakenduse kaitumisloogikat ja kasutaja tegevuste tootlemist.' },
+    { level: 1, question: 'Miks on JavaScript sellise ulesande puhul oluline?', options: ['Et reageerida kasutajale', 'Et muuta GitHubi linki', 'Et asendada markdowni', 'Et peita kausta nimi'], correctIndex: 0, explanation: 'JavaScript juhib tavaliselt kasutaja sisendit, loogikat ja tulemuse kuvamist.' },
+    { level: 2, question: `Mida voib JavaScript fail "${secondaryJsFile}" teha, kui kasutaja vajutab nuppu?`, options: ['Kaivitada funktsiooni', 'Muuta faili laiendit', 'Kustutada brauseri ajaloo', 'Lukustada klaviatuuri'], correctIndex: 0, explanation: 'Nupu vajutus seotakse JavaScriptis tihti funktsiooniga, mis tootleb tegevuse.' },
+    { level: 2, question: 'Miks tuleb kasutaja sisendit enne tootlemist valideerida?', options: ['Et valtida vigast loogikat', 'Et muuta fonti vaiksemaks', 'Et peita punktitabelit', 'Et vahetada faviconi'], correctIndex: 0, explanation: 'Valideerimine aitab JavaScriptil vältida vigaseid olukordi ja ootamatuid tulemusi.' },
+    { level: 3, question: 'Milline JavaScripti teema on sellises lahenduses koige olulisem?', options: ['Andmete ja sundmuste tootlus', 'Ainult varvivalik', 'Ainult faili nimi', 'Ainult brauseri logo'], correctIndex: 0, explanation: 'Sellistes ulesannetes on oluline, kuidas JavaScript tootleb tegevusi ja muudab olekut.' },
+    { level: 6, question: 'Mida peaks hea JavaScripti keskne kusimus kontrollima?', options: ['Miks funktsioon nii toimib', 'Mis varvi nupp on', 'Mis nimi kaustal on', 'Mis kell fail loodi'], correctIndex: 0, explanation: 'Kusimus peaks kontrollima, kas oppija saab aru JavaScripti loogikast, mitte ainult valimusest.' },
+    { level: 6, question: 'Mis on event listeneri peamine eesmärk?', options: ['Siduda tegevus koodiga', 'Muuta HTML CSSiks', 'Saata fail printerisse', 'Vahendada pildi suurust'], correctIndex: 0, explanation: 'Event listener kuulab kasutaja tegevusi ja lubab JavaScriptil neile reageerida.' },
+    { level: 7, question: 'Miks on kasulik hoida JavaScripti loogikat funktsioonides?', options: ['Koodi on lihtsam testida', 'Nuppe saab suuremaks teha', 'HTML kaob luhenemisel', 'Pildid muutuvad teravamaks'], correctIndex: 0, explanation: 'Funktsioonidesse jagatud loogika on loetavam, testitavam ja hooldatavam.' },
+    { level: 8, question: 'Milline probleem tekib, kui JavaScript muudab DOM-i vales kohas voi valel ajal?', options: ['Kasutajaliides voib anda vale tulemuse', 'Node.js kustub arvutist', 'GitHubi repo kaob', 'Brauser vahetab keelt'], correctIndex: 0, explanation: 'Kui DOM-i muudetakse valesti, ei pruugi kasutaja naha oiget seisu voi tulemust.' },
+    { level: 9, question: 'Miks peaks JavaScriptis vead kinni pyydma voi kasutajale naitama?', options: ['Et rakendus kaituks selgemalt', 'Et CSS saaks tumedamaks', 'Et faili nimi oleks pikem', 'Et JSON muutuks HTMLiks'], correctIndex: 0, explanation: 'Veakäsitlus aitab vältida segast olukorda ja annab kasutajale arusaadava tagasiside.' },
+    { level: 11, question: 'Milline JavaScripti viga voib anda ootamatu tulemuse arvutuses voi tootluses?', options: ['Sisend jaab stringiks', 'Taust on liiga hele', 'Failinimi on lyhike', 'Pealkiri on rasvane'], correctIndex: 0, explanation: 'Kui sisendit ei teisendata oigesse tyyppi, võib loogika anda vale tulemuse.' },
+    { level: 11, question: 'Miks voib innerHTML kasutamine olla ohtlik, kui sisend tuleb kasutajalt?', options: ['See voib tuua XSS riski', 'See eemaldab alati JavaScripti', 'See peatab npm kaivituse', 'See muudab CSS JSONiks'], correctIndex: 0, explanation: 'innerHTML voib lubada pahatahtliku sisu sisestamist, kui sisendit ei puhastata.' },
+    { level: 12, question: 'Kuidas parandada JavaScripti hooldatavust suuremas lahenduses?', options: ['Jagada loogika vaiksemateks funktsioonideks', 'Kirjutada koik uhele reale', 'Peita koik muutujad kommentaari', 'Eemaldada koik tingimused'], correctIndex: 0, explanation: 'Vaiksemad vastutusalad ja selged funktsioonid muudavad koodi hooldatavamaks.' },
+    { level: 13, question: 'Milline JavaScripti disainivea mark voib viidata halvale struktuurile?', options: ['Uks funktsioon teeb liiga palju', 'Nupul on umarad nurgad', 'HTML failis on pealkiri', 'Kaustas on kaks faili'], correctIndex: 0, explanation: 'Kui üks funktsioon teeb korraga liiga palju, muutub loogika raskesti jälgitavaks ja testitavaks.' },
+    { level: 15, question: `Mis naitaks koige paremini, et oppija saab faili "${primaryJsFile}" loogikast aru?`, options: ['Ta oskab selgitada miks kood nii tootab', 'Ta maletab faili nime peast', 'Ta teab CSS muutujate jada', 'Ta oskab repo URLi kirjutada'], correctIndex: 0, explanation: 'Parim arusaamise mark on voime seletada JavaScripti loogikat, mitte ainult detaile meelde jatta.' }
   ];
 }
 
-function inferPrimaryStack(extensions) {
-  if (extensions.includes('html') && extensions.includes('css') && extensions.includes('js')) {
-    return 'Veebi struktuur, kujundus ja loogika';
-  }
-  if (extensions.includes('py')) {
-    return 'Pythoni rakendusloogika';
-  }
-  if (extensions.includes('json') && extensions.includes('js')) {
-    return 'Andmefail ja JavaScripti töötlus';
-  }
-  if (extensions.length > 0) {
-    return 'Mitme failiga tehniline lahendus';
-  }
-  return 'Üldine failipõhine lahendus';
-}
-
-/**
- * Parse questions from AI response
- */
 function parseQuestionsFromResponse(responseText) {
   try {
-    // Try to extract JSON from the response
     const jsonMatch = responseText.match(/\[\s*\{[\s\S]*\}\s*\]/);
     if (!jsonMatch) {
       throw new Error('Could not find JSON in response');
@@ -375,26 +269,21 @@ function parseQuestionsFromResponse(responseText) {
 
     const questions = JSON.parse(jsonMatch[0]);
 
-    // Validate and normalize questions
-    return questions.map((q, index) => ({
-      level: q.level || Math.min(15, Math.floor(index / 5) + 1),
-      question: q.question || '',
-      options: q.options || [],
-      correctIndex: q.correctIndex ?? 0,
-      explanation: q.explanation || ''
-    })).slice(0, 15); // Ensure exactly 15 questions
+    return questions.map((question, index) => ({
+      level: question.level || Math.min(15, Math.floor(index / 5) + 1),
+      question: question.question || '',
+      options: question.options || [],
+      correctIndex: question.correctIndex ?? 0,
+      explanation: question.explanation || ''
+    })).slice(0, 15);
   } catch (error) {
     console.error('Error parsing questions:', error);
     throw new Error('Failed to parse AI response');
   }
 }
 
-/**
- * Generate a hint for a specific question
- */
 async function generateHint(question) {
   try {
-    // If no API key, return a local contextual hint
     if (!client) {
       return generateLocalHint(question);
     }
@@ -408,7 +297,7 @@ Variant B: ${question.options[1]}
 Variant C: ${question.options[2]}
 Variant D: ${question.options[3]}
 
-Anna kasutajale LÜHIKE vihje (1-2 lauset), mis aitab tal õige vastuse leida, kuid ÄRA ütle otsest vastust.`;
+Anna kasutajale lühike vihje 1-2 lausega, mis aitab tal leida õige JavaScripti loogika, kuid ära ütle otsest vastust.`;
 
     const response = await client.chat.completions.create({
       model: MODEL,
@@ -428,37 +317,25 @@ Anna kasutajale LÜHIKE vihje (1-2 lauset), mis aitab tal õige vastuse leida, k
   }
 }
 
-/**
- * Generate audience poll result (simulated)
- */
 function generateAudiencePoll(question) {
-  const options = question.options.map((_, index) => index);
-  
-  // Shuffle options
-  const shuffled = options.sort(() => Math.random() - 0.5);
-  
-  // Generate percentages that roughly favor correct answer
   let percentages = [0, 0, 0, 0];
   const correctIndex = question.correctIndex;
-  
-  // Correct answer gets 30-50% for easy questions, 50-70% for hard
   const correctPercent = Math.random() * (20 + question.level * 3) + 30;
+
   percentages[correctIndex] = Math.floor(correctPercent);
-  
-  // Distribute remaining percentage
+
   const remaining = 100 - percentages[correctIndex];
   const perOption = Math.floor(remaining / 3);
-  
+
   for (let i = 0; i < percentages.length; i++) {
     if (i !== correctIndex) {
       percentages[i] = perOption + (Math.random() * 5 - 2);
     }
   }
-  
-  // Normalize to 100%
-  const sum = percentages.reduce((a, b) => a + b, 0);
-  percentages = percentages.map(p => Math.round((p / sum) * 100));
-  
+
+  const sum = percentages.reduce((total, value) => total + value, 0);
+  percentages = percentages.map((value) => Math.round((value / sum) * 100));
+
   return {
     A: percentages[0],
     B: percentages[1],
@@ -467,9 +344,6 @@ function generateAudiencePoll(question) {
   };
 }
 
-/**
- * Cache functions
- */
 function generateCacheKey(assignmentId) {
   return `questions_${assignmentId}`;
 }
@@ -479,7 +353,6 @@ async function getFromCache(key) {
     const cacheFile = path.join(CACHE_DIR, `${key}.json`);
     if (await fs.pathExists(cacheFile)) {
       const data = await fs.readJson(cacheFile);
-      // Cache expires after 24 hours
       if (Date.now() - data.timestamp < 24 * 60 * 60 * 1000) {
         return data.questions;
       }

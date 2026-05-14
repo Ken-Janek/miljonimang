@@ -1,38 +1,42 @@
-# AI Küsimuste Genereerimise Prompt
+# AI küsimuste genereerimise prompt
 
 ## Eesmärk
-Genereerida 15 valikvastustega küsimust, mis kontrollida õppija arusaamist konkreetsest kodeerimisülesandest ja selle lahendusest.
+
+Genereerida 15 valikvastustega küsimust, mis kontrollivad õppija arusaamist konkreetsest JavaScripti ülesandest ja selle lahendusest.
 
 ## Kontekst
-Õppijale esitatakse ülesannet ja tema lahendust. Küsimused peavad kontrollima, kas õppija mõistab lahenduse loogikat, kasutatud kontseptsioone ja ülesande nõudeid - mitte ainult seda, kas ta meeles on mõni detaili.
+
+Õppijale esitatakse ülesande kirjeldus ja lahenduse failid. Küsimused peavad kontrollima, kas õppija mõistab JavaScripti loogikat, kasutatud kontseptsioone ja ülesande nõudeid, mitte ainult seda, kas talle jäi mõni detail meelde.
 
 ## Küsimuste nõuded
 
-1. **Raskusaste jaotus**
-   - Küsimused 1-5: Lihtsad (põhikontseptsioonid)
-   - Küsimused 6-10: Keskmise raskusega (sisemine loogika)
-   - Küsimused 11-15: Rasked (sügav arusaamine, vigade leidmine)
+1. Raskusastmed
+   - Küsimused 1-5: lihtsad
+   - Küsimused 6-10: keskmised
+   - Küsimused 11-15: rasked
 
-2. **Igal küsimusel peab olema**
-   - Selge, arusaadav küsimus
+2. Igal küsimusel peab olema
+   - selge küsimus
    - 4 vastusevarianti
-   - Täpselt 1 õige vastus
-   - Lühike selgitus õige vastuse kohta
+   - täpselt 1 õige vastus
+   - lühike selgitus
 
-3. **Vastusevariandi nõuded**
-   - Jällestused peavad olema usutavad, mitte ilmse valeda
-   - Valikvariandid peaksid olema üksikul konstrueeritud
-   - Mitte kaheldava vastusevariandid
+3. Vastusevariandid peavad olema
+   - usutavad
+   - sarnase pikkusega
+   - sama tüüpi sõnastusega
+   - ilma ilmselgelt naljakate või absurdsete valikuteta
 
-4. **Küsimuste sisu**
-   - Põhinevad OTSE assignment.md faili nõuetel ja lahenduse failidel
-   - Kontrollivad arusaamist, mitte ainult mälu
-   - Viitavad tegeliku koodi, muutujate, funktsioonide nimedele
-   - Kuni küsimused võivad käsitleda lahenduse parandamise võimalusi
+4. Küsimuste sisu peab
+   - põhinema otse `assignment.md` failil ja lahenduse failidel
+   - kontrollima arusaamist, mitte ainult mälu
+   - viitama tegelikule JavaScripti loogikale, muutujatele, funktsioonidele ja andmevoole
+   - keskenduma eelkõige sündmustele, DOM-i muutmisele, funktsioonidele, tingimuslausetele, andmete töötlemisele, vigade käsitlemisele ja võimalikele parandustele
+   - vältima küsimusi, mis on ainult HTML-i või CSS-i detailide meeldejätmine, kui need ei ole otseselt seotud JavaScripti käitumisega
 
 ## Väljundvorming
 
-Tagasta JSON array koos täpselt 15 küsimusega:
+Tagasta ainult JSON massiiv täpselt 15 küsimusega:
 
 ```json
 [
@@ -48,63 +52,67 @@ Tagasta JSON array koos täpselt 15 küsimusega:
 
 ## Näited
 
-### Kerge küsimus (level 1)
+### Kerge küsimus
+
 ```json
 {
   "level": 1,
-  "question": "Millist HTML-elementi kasutatakse vormi esitamiseks?",
+  "question": "Miks kasutatakse selles lahenduses addEventListener meetodit?",
   "options": [
-    "<input>",
-    "<form>",
-    "<button>",
-    "<div>"
+    "Et laadida uus CSS fail",
+    "Et reageerida kasutaja tegevusele",
+    "Et muuta HTML JavaScriptiks",
+    "Et salvestada brauseri ajalugu"
   ],
   "correctIndex": 1,
-  "explanation": "<form> element on HTML-is spetsiaalelt vormi esitamiseks loodud. Kuigi <button> võib kunagi olla vormi osa, on <form> õige vastus."
+  "explanation": "addEventListener seob JavaScripti kasutaja tegevusega, näiteks klikiga või vormi esitamisega."
 }
 ```
 
-### Keskmine küsimus (level 2)
+### Keskmine küsimus
+
 ```json
 {
   "level": 6,
-  "question": "Miks tuleb kasutaja sisend enne arvutamist parseInt() abil teisendada arvuks?",
+  "question": "Miks tuleb sisend enne arvutamist arvuks teisendada?",
   "options": [
-    "Et kiirendada arvutusi",
-    "Kuna HTML input väli tagastab alati teksti, mitte numbrit",
-    "Et vähendada mälukasutust",
-    "Et tagada brauseriga ühilduvus"
+    "Et muuta nupp aktiivseks",
+    "Sest input annab algselt stringi",
+    "Et lühendada faili pikkust",
+    "Sest DOM nõuab alati numbrit"
   ],
   "correctIndex": 1,
-  "explanation": "HTML input elemendist pärit andmed on alati stringid (tekst). Arvutamise tegemiseks tuleb need arvudeks teisendada, muidu tekib stringi ühendamise asemel numbrite liitmine (nt '5' + '3' = '53')."
+  "explanation": "HTML input annab väärtuse stringina ja ilma teisendamata võib JavaScript teha vale tehte või stringi liitmise."
 }
 ```
 
-### Raske küsimus (level 11+)
+### Raske küsimus
+
 ```json
 {
   "level": 11,
-  "question": "Milline lahenduse osa võib põhjustada turvariski, kui kasutaja sisend lisatakse otse innerHTML abil?",
+  "question": "Milline oht tekib, kui kasutaja sisend lisatakse otse innerHTML abil?",
   "options": [
-    "Funktsioon ise on ohtlik",
-    "JavaScript ei saa kunagi turvaline olla",
-    "Kasutaja sisend võib sisaldada pahatahtlikku koodi (XSS rünne)",
-    "See ei ole tegelik probleem"
+    "Pilt kaob lehelt",
+    "Tekib XSS risk",
+    "CSS fail kustub",
+    "JSON muutub vigaseks"
   ],
-  "correctIndex": 2,
-  "explanation": "Kui kasutaja sisend lisatakse otse innerHTML abil, saab sisendisse panna pahatahtliku JavaScripti koodi. Turvaline lahendus oleks kasutada textContent või saniteerida sisend."
+  "correctIndex": 1,
+  "explanation": "innerHTML võib lubada pahatahtliku sisendi käivitamist, kui kasutaja sisendit ei puhastata."
 }
 ```
 
 ## Kohandamine konkreetsele ülesandele
 
 Kui analüüsid ülesannet:
-1. Loe assignment.md nõuded hoolikalt
-2. Analüüsi lahenduse failid
-3. Tuva peamised kontseptsioonid ja võimalikud vigu
-4. Genereeri küsimused, mis kontrolliva just neid aspekte
-5. Veendu, et õigete vastuste jaotus on erinev (0-3 vahel)
 
-## Küsimuste randomiseerimine
+1. Loe hoolikalt `assignment.md`.
+2. Analüüsi JavaScripti faile ja vajadusel ka HTML-i ning andmefaile, kui need mõjutavad JavaScripti loogikat.
+3. Tuvasta peamised funktsioonid, sündmused, muutujad, andmevoog ja võimalikud vead.
+4. Koosta küsimused, mis kontrollivad just neid aspekte.
+5. Veendu, et õigete vastuste asukohad oleksid erinevad.
 
-Küsimuste valikvariandid peaksid olema randomiseeritud, et eri mängusessioonidel oleksid nad erineval positsioonil.
+## Randomiseerimine
+
+Küsimuste ja vastusevariantide järjekord võib sessiooniti muutuda, kuid küsimused peavad jääma sisuliselt seotud konkreetse JavaScripti lahendusega.
