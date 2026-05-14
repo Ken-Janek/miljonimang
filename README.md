@@ -1,3 +1,5 @@
+Mängi siin: miljonimang-production.up.railway.app
+
 # Miljonimäng
 
 ## Projekti kirjeldus
