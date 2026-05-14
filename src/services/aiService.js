@@ -163,7 +163,7 @@ async function generateQuestions(assignment, solutionFiles) {
     console.log(`[AI Generation] Generating fresh questions for ${assignment.id}...`);
     if (!client) {
       console.log(`[Mock Mode] Generating mock questions for ${assignment.id}...`);
-      const mockQuestions = generateMockQuestions(assignment.title);
+      const mockQuestions = generateAssignmentBasedMockQuestions(assignment, solutionFiles);
       // Randomize the questions each time (no caching)
       return randomizeQuestions(mockQuestions);
     }
@@ -193,7 +193,7 @@ async function generateQuestions(assignment, solutionFiles) {
       return randomizeQuestions(questions);
     } catch (error) {
       console.warn('[OpenAI] Failed to generate questions, falling back to mock mode:', error.message);
-      const mockQuestions = generateMockQuestions(assignment.title);
+      const mockQuestions = generateAssignmentBasedMockQuestions(assignment, solutionFiles);
       return randomizeQuestions(mockQuestions);
     }
   } catch (error) {
@@ -318,6 +318,48 @@ function generateMockQuestions(assignmentTitle) {
   ];
   
   return mockQuestions;
+}
+
+function generateAssignmentBasedMockQuestions(assignment, solutionFiles) {
+  const title = assignment.title || `Ülesanne ${assignment.id}`;
+  const fileNames = solutionFiles.map(file => file.name);
+  const extensions = [...new Set(solutionFiles.map(file => file.extension).filter(Boolean))];
+  const firstFile = fileNames[0] || 'lahendusfail';
+  const secondFile = fileNames[1] || firstFile;
+
+  return [
+    { level: 1, question: `Mis on ülesande "${title}" peamine eesmärk?`, options: ['Lahenduse mõistmise kontroll', 'Brauseri seadete muutmine', 'Serveri kustutamine', 'Failide peitmine'], correctIndex: 0, explanation: 'Selle rakenduse küsimused peavad kontrollima, kas kasutaja saab ülesande lahendusest aru.' },
+    { level: 1, question: 'Milline fail on iga ülesande juures kohustuslik?', options: ['assignment.md', 'results.json', 'server.log', 'notes.txt'], correctIndex: 0, explanation: 'assignment.md sisaldab ülesande kirjeldust, nõudeid ja hindamiskriteeriume.' },
+    { level: 2, question: `Miks loetakse lisaks assignment.md failile ka "${firstFile}" sisu?`, options: ['Et näha päris teostust', 'Et muuta faili nime', 'Et peita punktitabel', 'Et asendada README'], correctIndex: 0, explanation: 'Lahendusfailid annavad AI-le vajaliku konteksti küsimuste koostamiseks.' },
+    { level: 2, question: `Mida ütleb failide loend ${extensions.join(', ') || 'mitme faili'} kohta kõige paremini?`, options: [inferPrimaryStack(extensions), 'Projektis pole loogikat', 'Projekt on ainult andmebaas', 'Projekt on ainult pildikogu'], correctIndex: 0, explanation: 'Faililaiendid annavad vihje, milliste tehnoloogiatega lahendus on tehtud.' },
+    { level: 3, question: `Miks on kasulik, et ülesande failid nagu "${secondFile}" kaasatakse analüüsi?`, options: ['Küsimused saavad olla sisulisemad', 'Punktid muutuvad suuremaks', 'Vastus on alati A', 'Mäng lõpeb kiiremini'], correctIndex: 0, explanation: 'Kui AI näeb ka lahendusfaile, saab ta kontrollida loogikat, mitte ainult kirjeldust.' },
+    { level: 6, question: 'Miks ei piisa ainult faili nimede põhjal küsimuste koostamisest?', options: ['See ei näita lahenduse loogikat', 'See muudab CSS aeglaseks', 'See kustutab markdowni', 'See peatab serveri'], correctIndex: 0, explanation: 'Arusaamise kontrollimiseks peab küsimus põhinema päris sisul ja teostusel.' },
+    { level: 6, question: 'Mida peaks hea keskmise raskusega küsimus kõige tõenäolisemalt kontrollima?', options: ['Andmevoogu või sisemist loogikat', 'Ainult kausta värvi', 'Ainult faili suurust', 'Ainult commiti kuupäeva'], correctIndex: 0, explanation: 'Keskmise taseme küsimused peavad minema sügavamale kui lihtsalt põhimõistete kordamine.' },
+    { level: 7, question: 'Milline risk tekib siis, kui küsimused kontrollivad ainult mälu?', options: ['Vastused saab pähe õppida', 'Server ei käivitu', 'Nupud kaovad', 'HTML muutub JSON-iks'], correctIndex: 0, explanation: 'Sellisel juhul ei saa enam hinnata, kas õppija päriselt saab lahendusest aru.' },
+    { level: 8, question: 'Miks on numbriliste alamkaustade kasutamine hea disainivalik?', options: ['Uusi ülesandeid on lihtne lisada', 'Kõik failid muutuvad lühemaks', 'AI-d pole enam vaja', 'Mängus kaob punktiarvestus'], correctIndex: 0, explanation: 'Selline struktuur teeb süsteemi edasiarendatavaks ja skaleeritavaks.' },
+    { level: 9, question: 'Millist asja peaks AI küsimuste loomisel kontrollima assignment.md ja koodi võrdluses?', options: ['Kas nõuded on päriselt täidetud', 'Kas failid on tähestikus', 'Kas kasutaja nimi on lühike', 'Kas brauser on täisekraanil'], correctIndex: 0, explanation: 'Oluline on võrrelda lähteülesannet tegeliku teostusega.' },
+    { level: 11, question: 'Mis on suurim puudus siis, kui AI näeb ainult assignment.md faili, aga mitte lahendusfaile?', options: ['Küsimused jäävad liiga üldiseks', 'Punktid ei saa väärtust', 'CSS failid kaovad', 'Publikuhääletus peatub'], correctIndex: 0, explanation: 'Ilma lahenduseta ei saa hinnata, kuidas õppija tegelik kood või failistruktuur töötab.' },
+    { level: 12, question: 'Kuidas parandada küsimuste kvaliteeti ilma päris API-ta fallback-režiimis?', options: ['Seostada küsimused valitud ülesandega', 'Näidata alati õiget vastust', 'Eemaldada kõik selgitused', 'Küsida ainult failinimesid'], correctIndex: 0, explanation: 'Hea fallback peab jääma sama ülesande konteksti, mitte muutuma juhuslikuks viktoriiniks.' },
+    { level: 13, question: 'Milline leid viitaks, et lahendus ei vasta assignment.md nõuetele?', options: ['Nõue ei kajastu teostuses', 'Failinimi on lühike', 'Kaustas on kaks faili', 'README on markdownis'], correctIndex: 0, explanation: 'Nõuete ja lahenduse vahelise vastuolu märkamine näitab sügavamat arusaamist.' },
+    { level: 14, question: 'Milline edasiarendus tugevdaks õpetaja vaates kõige rohkem selle rakenduse väärtust?', options: ['Tulemuste ja vigade ajaloo salvestus', 'Kõigi nuppude halliks värvimine', 'Küsimuste arvu vähendamine', 'assignment.md eemaldamine'], correctIndex: 0, explanation: 'Tulemuste ajalugu aitaks õpetajal näha, millised teemad on õppijatele rasked.' },
+    { level: 15, question: 'Milline fallback-käitumine toetab kõige paremini projekti algset eesmärki?', options: ['Ülesandepõhised varuküsimused', 'Täiesti juhuslikud küsimused', 'Kohe mängu lõpetamine', 'Tühi vastuseekraan'], correctIndex: 0, explanation: 'Ka varurežiimis peab süsteem kontrollima valitud ülesande mõistmist, mitte suvalisi fakte.' }
+  ];
+}
+
+function inferPrimaryStack(extensions) {
+  if (extensions.includes('html') && extensions.includes('css') && extensions.includes('js')) {
+    return 'Veebi struktuur, kujundus ja loogika';
+  }
+  if (extensions.includes('py')) {
+    return 'Pythoni rakendusloogika';
+  }
+  if (extensions.includes('json') && extensions.includes('js')) {
+    return 'Andmefail ja JavaScripti töötlus';
+  }
+  if (extensions.length > 0) {
+    return 'Mitme failiga tehniline lahendus';
+  }
+  return 'Üldine failipõhine lahendus';
 }
 
 /**

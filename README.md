@@ -1,25 +1,36 @@
-## Rakenduse Kasutamine
-
-Rakendus on juba juurutatud Railway platvormile ja on kättesaadav aadressil:
-
-**https://miljonimang-production.up.railway.app/**
-
-> Rakendust pole vaja lokaalselt käivitada, ava lihtsalt Railway URL.
-
-# Miljonimäng - Assignment Validation Game
+# Miljonimäng
 
 ## Projekti kirjeldus
 
-Miljonimäng on veebirakendus, mis aitab õppijatel kontrollida, kas nad saavad aru enda või kellegi teise lahendusest. Rakendus töötab miljonimängu põhimõttel: kasutajale esitatakse järjest valikvastustega küsimusi, mis genereeritakse AI abil konkreetse ülesande kirjelduse ja lahenduse põhjal.
+Miljonimäng on veebirakendus, mis aitab kontrollida, kas õppija saab aru enda või kellegi teise tehtud ülesande lahendusest. Rakendus loeb `input/` kaustast ülesande kirjelduse ja lahendusfailid ning genereerib nende põhjal miljonimängu formaadis valikvastustega küsimused.
 
-Erinevalt tavalistest testidest kontrollib Miljonimäng mitte lihtsalt seda, kas failid on olemas või kood töötab, vaid püüab hinnata, kas kasutaja mõistab lahenduses kasutatud kontseptsioone, loogikat ja lähteülesande nõudeid.
+Rakendus ei kontrolli ainult seda, kas failid eksisteerivad, vaid püüab hinnata, kas kasutaja mõistab lahenduse loogikat, kasutatud kontseptsioone ja lähteülesande nõudeid.
 
 ## Kasutatud tehnoloogiad
 
-- **Backend**: Node.js + Express (Railway deployment)
-- **Frontend**: HTML5, CSS3, JavaScript (ES6+)
-- **AI**: OpenAI API (GPT-4/GPT-3.5)
-- **Andmehaldus**: JSON failid, faalisüsteem
+- Node.js
+- Express
+- HTML, CSS, JavaScript
+- OpenAI API
+- `fs-extra` failide lugemiseks
+
+## Käivitamise juhend
+
+### Lokaalselt
+
+1. Paigalda sõltuvused:
+   `npm install`
+2. Kopeeri `.env.example` failist endale `.env`.
+3. Lisa vajadusel `OPENAI_API_KEY`.
+4. Käivita rakendus:
+   `npm start`
+5. Ava brauseris `http://localhost:3000`
+
+### Juurutatud versioon
+
+Rakendus on saadaval ka Railway keskkonnas:
+
+`https://miljonimang-production.up.railway.app/`
 
 ## Hindamis- ja projektimaterjalid
 
@@ -30,193 +41,99 @@ Erinevalt tavalistest testidest kontrollib Miljonimäng mitte lihtsalt seda, kas
 - [Projektijuhtimine ja Kanban](docs/PROJECT_MANAGEMENT.md)
 - [Lõppdemo, nõuete täitmine ja tagasivaade](docs/FINAL_REVIEW.md)
 
-## Lõppdemo põhikasutusvoog
-
-1. Ava Railway rakendus.
-2. Vali avalehelt näidisülesanne.
-3. Rakendus loeb ülesande kirjelduse ja lahendusfailid.
-4. AI genereerib küsimused või fallback-küsimused.
-5. Mängi küsimustele vastates miljonimängu.
-6. Kasuta vajadusel vihjet, 50:50 või publiku hääletust.
-7. Mängu lõpus kuvatakse tulemus.
-
-### Uute Ülesannete Lisamine
-
-Uute ülesannete lisamiseks:
-
-1. Looge uus kaust `input/XXX/` (kus XXX on järgmine number)
-2. Lisage `assignment.md` fail ülesande kirjeldusega
-3. Lisage lahendusfailid (HTML, CSS, JS)
-4. Pushige muudatused GitHubi - Railway deployb automaatselt
-
-### AI Küsimuste Generatsioon
-
-Kõik küsimused genereeritakse OpenAI API abil reaalajas. Iga mängu jaoks luuakse uued küsimused ülesande kirjelduse ja lahenduse põhjal.
-
 ## Input-kausta struktuur
 
-Ülesanded asuvad `input/` kaustas numbriliste alamkaustadena:
+Rakendus loeb `input/` kaustast kõik numbrilised alamkaustad.
 
-```
+```text
 input/
   001/
     assignment.md
-    [lahenduse failid ja kaustad]
+    index.html
+    style.css
+    script.js
+
   002/
     assignment.md
-    [lahenduse failid ja kaustad]
-  003/
-    assignment.md
-    [lahenduse failid ja kaustad]
+    app.js
+    index.html
+    style.css
 ```
 
-### Miinimumnõuded ülesande jaoks
+Igas ülesande kaustas peab olema vähemalt:
 
-Iga ülesande kaustale:
-- **Kohustuslik**: `assignment.md` - ülesande püstitus, nõuded ja hindamiskriteeriumid
-- **Soovituslik**: Lahenduse failid (HTML, CSS, JS, Python, jne) - mida rohkem, seda paremad küsimused
+- `assignment.md`
 
-Näide `assignment.md` failist:
-
-```markdown
-# JavaScripti Kalkulaator
-
-## Ülesande kirjeldus
-Loo lihtne kalkulaator, mis suudab liita, lahutada, korrutada ja jagada kahe arvu.
-
-## Nõuded
-1. Kasutajaliides peab olema HTML-failist
-2. Arvutused peavad toimuma JavaScriptis
-3. Tulemust peab kuvatama HTML-ele
-4. Peab kontrollima vale sisendi (jagamine nulliga)
-
-## Hindamiskriteeriumid
-- Kõik 4 operatsiooni toimivad
-- Vale sisendi puhul kuvatakse veateade
-- Kood on loetav ja kommenteeritud
-```
+Samas kaustas või alamkaustades võivad olla lahenduse failid ükskõik millisel kujul.
 
 ## AI küsimuste genereerimise loogika
 
-### Protsess
+1. Rakendus loeb valitud ülesande `assignment.md` faili.
+2. Rakendus loeb sama ülesande kaustast ka lahendusfailid.
+3. Need andmed saadetakse OpenAI-le promptiga, mis asub failis [prompts/question-generation.md](prompts/question-generation.md).
+4. AI peab tagastama täpselt 15 küsimust JSON-kujul.
+5. Igal küsimusel on:
+   - `level`
+   - `question`
+   - `options`
+   - `correctIndex`
+   - `explanation`
 
-1. **Sisendi ettevalmistamine**
-   - assignment.md failist loetakse ülesande kirjeldus
-   - Lahenduse failid loetakse ja nende sisu saadab AI-le
-   - Loetakse faili tüübid ja nimed
-
-2. **AI kutsumise prompt**
-   - Prompt asub failis `prompts/question-generation.md`
-   - Säilitab õlekõrred, teeb 15 küsimust
-   - Jaotab küsimused raskusastmetega (1–5 kerge, 6–10 keskmine, 11–15 raske)
-
-3. **Küsimuste JSON-vorming**
-   ```json
-   {
-     "level": 1,
-     "question": "Küsimuse tekst",
-     "options": ["Valik A", "Valik B", "Valik C", "Valik D"],
-     "correctIndex": 1,
-     "explanation": "Lühike selgitus"
-   }
-   ```
-
-### Küsimuste tüübid
-
-**Kerged küsimused (1–5)**
-- Ülesande eesmärgid
-- Põhilised kontseptsioonid
-- Kasutatud failid ja tehnoloogiad
-
-**Keskmise raskusega (6–10)**
-- Lahenduse sisemine loogika
-- Funktsionaalsed nõuded
-- Andmete flow
-
-**Rasked küsimused (11–15)**
-- Alternatiivsed lahendused
-- Vigade leidmine
-- Parandusettepanekud
+Kui OpenAI API ei ole saadaval, kasutatakse ülesandepõhiseid fallback-küsimusi, et mäng jääks seotuks valitud ülesandega.
 
 ## Mängu reeglid
 
-### Punktisüsteem
-- 1. küsimus - 100 punkti
-- 2. küsimus - 200 punkti
-- (... jne ...)
-- 15. küsimus - 1,000,000 punkti
+- Mängus on 15 küsimust.
+- Igal küsimusel on 4 vastusevarianti.
+- Ainult üks vastus on õige.
+- Vale vastuse korral mäng lõpeb.
+- Kasutaja näeb oma hetkeseisu.
+- Kasutaja saab mängu pooleli jätta.
+- Küsimused randomiseeritakse iga mängu alguses.
 
-### Turvatasemed
-- Küsimus 5: 1,000 punkti
-- Küsimus 10: 32,000 punkti
-- Küsimus 15: 1,000,000 punkti
+Punktitasemed:
 
-Vale vastuse korral langeb tulemus viimasele saavutatud turvatasemele.
+- 1. küsimus: 100
+- 2. küsimus: 200
+- 3. küsimus: 300
+- 4. küsimus: 500
+- 5. küsimus: 1 000
+- 6. küsimus: 2 000
+- 7. küsimus: 4 000
+- 8. küsimus: 8 000
+- 9. küsimus: 16 000
+- 10. küsimus: 32 000
+- 11. küsimus: 64 000
+- 12. küsimus: 125 000
+- 13. küsimus: 250 000
+- 14. küsimus: 500 000
+- 15. küsimus: 1 000 000
 
-### Õlekõrred
-Kasutajal on 3 õlekõrt:
-1. **50:50** - Eemaldab 2 valet vastusevarianti
-2. **Vihje AI-lt** - AI annab lühikese vihje
-3. **Küsi publikult** - Simuleeritud publikuhääletuse tulemused
+Turvatasemed:
 
-## Projekti struktuuri kirjeldus
+- 5. küsimus: 1 000
+- 10. küsimus: 32 000
+- 15. küsimus: 1 000 000
 
-```
-Miljonimang/
-├── src/
-│   ├── server.js              # Express rakenduse sisenemine
-│   ├── routes/
-│   │   ├── assignments.js     # Ülesannete nimekirja logi
-│   │   ├── game.js            # Mängu loogika
-│   │   └── ai.js              # AI kütsumised
-│   ├── services/
-│   │   ├── assignmentService.js
-│   │   ├── aiService.js       # OpenAI API kutse
-│   │   └── gameService.js
-│   └── public/
-│       ├── index.html
-│       ├── game.html
-│       ├── css/
-│       │   └── style.css
-│       └── js/
-│           ├── app.js
-│           └── game.js
-├── input/
-│   └── 001/
-│       ├── assignment.md
-│       └── [lahenduse failid]
-├── prompts/
-│   ├── question-generation.md
-│   └── hint-generation.md
-├── .env                       # Keskkonnavalikud (pole Git'is)
-├── .gitignore
-├── README.md
-└── package.json
-```
+Õlekõrred:
+
+- `50:50`
+- `Vihje`
+- `Publiku hääletus`
 
 ## Teadaolevad piirangud
 
-- OpenAI API kasutamine nõuab makselist kuulutamist
-- Küsimuste genereerimine võtab aega (10-30 sekundit)
-- Suurte lahenduste failide puhul võib AI vastus olla ebatäpne
-- Praegu ei ole tulemuste püsivat salvestamist
+- Küsimuste kvaliteet sõltub OpenAI vastuse kvaliteedist.
+- Tulemusi ei salvestata püsivalt andmebaasi.
+- Mänguseansse hoitakse serveris mälus.
+- Markdowni renderdus on lihtsustatud.
 
 ## Edasiarenduse võimalused
 
-### Lühiajalist
-- Tulemuste salvestamine andmebaasi
-- Kasutajate süsteem
-- Küsimuste cache'imine
-
-### Pikaajaline
-- Õpetaja vaade statistikaga
-- Automaatne hindamine
-- Integratsiooni teiste LMS-iga (Moodle, Canvas)
-- Mängitavate sessiooni ajalugu
-- Edasijõudnud õlekõrred
-- Visualiseeritud tulemused
-
----
-
-**Versioon**: 1.0.0  
-**Viimati värskendatud**: mai 2026
+- tulemuste salvestamine
+- mänguajalugu
+- õpetaja vaade
+- kasutajate süsteem
+- küsimuste cache
+- parem markdowni kuvamine
+- süntaksivärvimine lahendusfailidele

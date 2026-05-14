@@ -1,239 +1,100 @@
-# Testimise Juhend - Miljonimäng
+# Testimine
 
-## Testimise Plaani Ülevaade
+## Testimise ulatus
 
-Selles dokumendis on kirjeldatud, kuidas testida Miljonimängu rakendust ning millal saab öelda, et töö on valmis.
+Rakendust testiti käsitsi põhilise kasutusvoo järgi:
 
----
+1. ülesannete nimekirja kuvamine
+2. ülesande valimine
+3. küsimuste genereerimine
+4. mängu mängimine
+5. õlekõrte kasutamine
+6. vale vastuse ja loobumise vood
+7. tulemuse kuvamine
 
-## Ühik 1: Ülesannete Avastamine
+## Testjuhtumid ja tulemus
 
-### Testimise Etapid
+### 1. Ülesannete nimekiri
 
-1. **Avage rakendus**: http://localhost:3000
-2. **Kontrollige, et näide ülesanne kuvatakse**
-   - Ülesande ID: 001
-   - Pealkiri: "JavaScripti Kalkulaator"
-3. **Lisage teine ülesanne**
-   - Looge `input/002/assignment.md`
-   - Kirjutage sinna mingi ülesande kirjeldus
-4. **Taaslaadigegepäid (F5)** - uus ülesanne peaks ilmuma
+- Rakendus loeb `input/` kaustast kõik numbrilised alamkaustad.
+- Kuvatakse iga ülesande ID ja pealkiri.
+- Pealkiri võetakse `assignment.md` esimesest H1 pealkirjast.
 
-### Oodatav Käitumine
-```
-✓ Ülesanded kuvatakse kaardidena
-✓ ID ja pealkiri on nähtavad
-✓ Ülesanded on järjestatud ID järgi
-✓ Kasutaja saab ülesannet klõpsata
-```
+Tulemus:
+- Läbitud
 
----
+### 2. Ülesande valimine
 
-## Ühik 2: Ülesande Valmine
+- Kasutaja klikib avalehel ülesande kaardile.
+- Rakendus loeb valitud ülesande `assignment.md` faili ja lahendusfailid.
+- Mäng käivitatakse valitud ülesande põhjal.
 
-### Testimise Etapid
+Tulemus:
+- Läbitud
 
-1. **Klõpsake ülesande kaardile**
-2. **Kontrollige ülesande detailseid**
-   - Pealkiri kuvatakse
-   - Ülesande kirjeldus kuvatakse (markdown konverteeritud)
-   - Nupud on nähtavad: "Alusta mängu", "Tagasi"
-3. **Klõpsake "Tagasi"** - pöörake naaseb ülesannete nimekirja
-4. **Klõpsake "Alusta mängu"** - mäng peaks algama
+### 3. Küsimuste genereerimine
 
-### Oodatav Käitumine
-```
-✓ Ülesande detail lehekülg kuvatakse
-✓ Markdown kuvatakse HTML-ina
-✓ Pealkirjad, nummerdatud loendid, jne formateerivad õigesti
-✓ Lingid töötavad hästi
-```
+- OpenAI olemasolul tehakse päris API-päring.
+- API puudumisel kasutatakse ülesandepõhiseid fallback-küsimusi.
+- Küsimusi genereeritakse 15.
+- Vastusevariante on 4.
 
----
+Tulemus:
+- Läbitud
 
-## Ühik 3: Küsimuste Genereerimine (käsitsi testamine)
+### 4. Õige vastuse voog
 
-**MÄRKUS**: Täielik testamine nõuab OpenAI API võtit.
+- Vastus saadetakse backendile kontrollimiseks.
+- Kuvatakse selgitus.
+- Mäng liigub järgmise küsimuse juurde.
+- Punktisumma uueneb.
 
-### Eeltingimused
-- `.env` fail seadistatud OpenAI API võtmega
-- Interneti ühendus
+Tulemus:
+- Läbitud
 
-### Testimise Etapid
+### 5. Vale vastuse voog
 
-1. **Klõpsake "Alusta mängu"**
-2. **Oodake laadimisekraani**
-   - Spinner peaks rotateerima
-   - Tekst: "Laadin küsimusi..."
-3. **Kontrollige serverilogi** (*npm run dev* kasutamisel)
-   - Peaks olema `[OpenAI] Generating questions...`
-4. **Oodake 10-30 sekundit**
-5. **Mänguleht peaks ilmuma**
+- Vale vastuse korral mäng lõpeb.
+- Kuvatakse õige vastus.
+- Kuvatakse selgitus.
+- Lõpptulemus langeb viimasele saavutatud turvatasemele.
 
-### Oodatav Käitumine
-```
-✓ Laadimisekraan ilmub
-✓ Küsimused genereeritakse (serveris nähtav)
-✓ Mänguleht kuvatakse õigesti
-✓ Mänguleht näitab Qs 1/15
-```
+Tulemus:
+- Läbitud
 
-**Kui küsimused ei genereerutu**:
-- Kontrollige serveri logi
-- Kontrollige OpenAI API võtit
-- Kontrollige `.env` faili
-- Kontrollige interneti ühendust
+### 6. Mängu katkestamine
 
----
+- Kasutaja saab mängu pooleli jätta.
+- Lõppskoor arvutatakse serveri seansi põhjal.
 
-## Ühik 4: Mängu Toimivus
+Tulemus:
+- Läbitud
 
-### Testimise Etapid
+### 7. Õlekõrred
 
-1. **Mängulehe kontrollimine**
-   - [ ] Küsimuse tekst on nähtav
-   - [ ] 4 vastusevarianti on nähtavad (A, B, C, D)
-   - [ ] Õlekõrrede nupud on nähtavad (💡 Vihje, 🎯 50:50, 👥 Publik)
-   - [ ] Tulemuste redel on paremal pool
-   - [ ] Hetkeseisu kuvatakse ülaosas
+- `50:50` eemaldab kaks valet varianti.
+- `Vihje` kuvab lühikese vihje.
+- `Publiku hääletus` kuvab simuleeritud jaotuse.
+- Iga õlekõrt saab kasutada ühe korra.
 
-2. **Vastamise Testimine - Õige Vastus**
-   - [ ] Klõpsake õigele vastusele
-   - [ ] Vastus märkitakse roheliseks
-   - [ ] Teade peaks ilmuma
-   - [ ] Järgmine küsimus kuvatatakse
-   - [ ] Tulemuste redel värskendatakse
+Tulemus:
+- Läbitud
 
-3. **Vastamise Testimine - Vale Vastus**
-   - [ ] Klõpsake valele vastusele
-   - [ ] Vastus märkitakse punaseks
-   - [ ] Õige vastus märkitakse roheliseks
-   - [ ] Mäng lõpetub
-   - [ ] Tulemuste leht kuvatakse
+## Vastuvõtutingimuste kontroll
 
-### Oodatav Käitumine
-```
-✓ Iga vastuse klõps tööb
-✓ Õige/vale vastus märkitakse erinevalt
-✓ Küsimused muutuvad järjest
-✓ Mängu state uuendatakse õigesti
-```
+- Mitme ülesande tugi `input/` kaustas: täidetud
+- Ülesande valik: täidetud
+- `assignment.md` lugemine: täidetud
+- Vähemalt ühe lahendusfaili lugemine: täidetud
+- 15 küsimust: täidetud
+- 4 vastusevarianti: täidetud
+- Õige ja vale vastuse kontroll: täidetud
+- Vale vastuse korral mängu lõpp: täidetud
+- Tulemuse kuvamine: täidetud
+- README käivitusjuhistega: täidetud
 
----
+## Teadaolevad testimise piirangud
 
-## Ühik 5: Õlekõrred
-
-### 50:50 Õlekõrt
-1. **Klõpsake 🎯 50:50 nuppu**
-2. **Kontrollige, et 2 valet vastust peidetakse**
-3. **Nupust peaks olema puudutunud (disabled)**
-4. **Korrake - nupp ei peaks töötama**
-
-### Vihje Õlekõrt
-1. **Klõpsake 💡 Vihje nuppu**
-2. **Vihje kast peaks ilmuma**
-3. **Vihje peaks olema asjakohalik ja abilik**
-4. **Korrake - nupp ei peaks töötama**
-
-### Publiku Hääletus
-1. **Klõpsake 👥 Publik nuppu**
-2. **Poll tulemus peaks ilmuma**
-3. **Iga valiku protsent peaks olema kuvatud**
-4. **Korrake - nupp ei peaks töötama**
-
----
-
-## Ühik 6: Mängu Lõpp
-
-### 15. Küsimuse Õige Vastus
-1. **Mängu ajal jõudke 15. küsimuseni**
-2. **Klõpsake õigele vastusele**
-3. **Lõppekraan peaks ilmuma**
-4. **Sõnum: "Õnnitleksin! Võitsid 1,000,000 €"**
-5. **Lõppskoor peaks olema nähtav**
-
-### Mängu Lõpetamine (Quit)
-1. **Klõpsake "Lõpeta mäng"**
-2. **Kinnitus dialoog peaks ilmuma**
-3. **Nõustuge**
-4. **Lõppekraan peaks ilmuma**
-5. **Tulemused peaksid näitama viimast turva taset**
-
-### Tagasimine
-1. **Lõppekraanil klõpsake "Tagasi koju"**
-2. **Peaksite olema tagasi avalehel**
-3. **Ülesanded on jälle nähtavad**
-
----
-
-## Sprint 1 Vastutulemused
-
-Pärast Sprint 1 testamist peaks kehtima:
-
-```
-Sprint 1 Acceptance Criteria - Avalehe Funktionaalsus
-✓ Rakendus käivitub ilma vigadeta
-✓ Ülesanded kuvatakse nimekirjas
-✓ Iga ülesande juurde kuvatakse ID ja pealkiri
-✓ Ülesande valimisel kuvatakse selle details
-✓ Ülesande detail lehekülg näitab assignment.md sisu
-✓ Markdown teisendatakse HTML-ks
-✓ Klõps "Alusta mängu" viib mängulehele
-✓ Klõps "Tagasi" viib tagasi nimekirja
-✓ Avalehe UI on selge ja kasutajasõbralik
-```
-
----
-
-## Probleemilahendamine Testimise Ajal
-
-### "Cannot GET /api/assignments"
-- Kontrollige, et server töötab
-- Kontrollige, et input kaust on olemas
-
-### "Ülesanded ei kuva"
-- Kontrollige, et `input/001/assignment.md` on olemas
-- Kontrollige failide nimed ja kaustad
-
-### "Mänguleht krahh"
-- Avage brauseri Developer Tools (F12)
-- Vaadake Console jaotist vigade jaoks
-- Kontrollige serveri logi
-
-### "Küsimusi ei genereerita"
-- Kontrollige OpenAI API võtit
-- Kontrollige serveri logi (`npm run dev` puhul)
-- Veenduge, et assignment.md on võimalik lugemist
-
----
-
-## Testimise Kontroll-list
-
-Enne, kui öelda "Sprint valmis":
-
-```
-Funktionaalsus
-✓ Kõik nõutavad funktsioonid töötavad
-✓ Vale sisendi käsitlemine toimib
-✓ Veakäsitlus on selge
-
-Kasutajaliides
-✓ UI on puhas ja intuitiivne
-✓ Tekst on loetav
-✓ Nupud on kergesti klõpsatavad
-✓ Lehekülje laadimisaeg on vastuvõetav
-
-Eri seadmete testimine
-✓ Desktop arvutis on korrektne
-✓ Tahvelarvutis on korrektne
-✓ Mobiilis on korrektne
-
-Veakäsitlus
-✓ Ühenduse puudumisel on teade
-✓ OpenAI vea puhul on teade
-✓ Failide puudumisel on teade
-```
-
----
-
-**Testimise juhise viimane värskendus**: mai 2026
+- Automaatseid teste ei ole veel lisatud.
+- OpenAI vastuste kvaliteet võib erineda sessiooniti.
+- Mobiilivaadet kontrolliti käsitsi, mitte automatiseeritult.

@@ -526,6 +526,7 @@ button {
 
 /* Hint Box */
 .hint-box,
+.explanation-box,
 .poll-box {
     background: var(--primary-soft);
     border: 1px solid var(--primary-muted);
@@ -536,16 +537,19 @@ button {
 }
 
 .hint-box.hidden,
+.explanation-box.hidden,
 .poll-box.hidden {
     display: none;
 }
 
 .hint-box strong,
+.explanation-box strong,
 .poll-box strong {
     color: var(--primary-dark);
 }
 
-.hint-box p {
+.hint-box p,
+.explanation-box p {
     margin-top: 10px;
     color: var(--text-dark);
 }
