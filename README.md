@@ -1,4 +1,4 @@
-Mängi siin: miljonimang-production.up.railway.app
+Mängi siin: https://miljonimang-production.up.railway.app/
 
 # Miljonimäng
 
