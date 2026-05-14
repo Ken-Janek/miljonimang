@@ -9,15 +9,16 @@ let gameState = {
     hintsUsed: 0,
     fiftyFiftyUsed: false,
     audiencePollUsed: false,
-    assignmentTitle: ''
+    assignmentTitle: '',
+    pendingNextQuestion: null
 };
 
 const POINTS = [100, 200, 300, 500, 1000, 2000, 4000, 8000, 16000, 32000, 64000, 125000, 250000, 500000, 1000000];
 const SAFETY_LEVELS = [0, 0, 0, 0, 0, 1000, 1000, 1000, 1000, 1000, 32000, 32000, 32000, 32000, 32000, 1000000];
 
 document.addEventListener('DOMContentLoaded', async () => {
-    gameState.sessionId = sessionStorage.getItem('gameSessionId');
-    gameState.assignmentTitle = sessionStorage.getItem('assignmentTitle') || '';
+    gameState.sessionId = getStoredValue('gameSessionId');
+    gameState.assignmentTitle = getStoredValue('assignmentTitle') || '';
 
     if (!gameState.sessionId) {
         window.location.href = '/';
@@ -30,8 +31,10 @@ document.addEventListener('DOMContentLoaded', async () => {
 });
 
 function clearStoredGameSession() {
-    sessionStorage.removeItem('gameSessionId');
-    sessionStorage.removeItem('gameQuestions');
+    ['gameSessionId', 'gameQuestions', 'assignmentTitle', 'selectedAssignmentId'].forEach((key) => {
+        sessionStorage.removeItem(key);
+        localStorage.removeItem(key);
+    });
 }
 
 async function startGameSession() {
@@ -39,13 +42,24 @@ async function startGameSession() {
         document.getElementById('gameLoading').classList.remove('hidden');
         document.getElementById('gameContent').classList.add('hidden');
 
-        const questionsData = sessionStorage.getItem('gameQuestions');
-        if (!questionsData) {
-            throw new Error('Küsimusi ei leitud. Alusta mängu uuesti avalehelt.');
+        const response = await fetch(`/api/game/state/${gameState.sessionId}`);
+        if (!response.ok) {
+            throw new Error('Mangu seanssi ei leitud. Alusta mangu uuesti avalehelt.');
         }
 
-        gameState.allQuestions = JSON.parse(questionsData);
-        displayQuestionContent(gameState.allQuestions[0], 0);
+        const data = await response.json();
+        gameState.allQuestions = data.questions || [];
+        gameState.totalQuestions = gameState.allQuestions.length || 15;
+        gameState.currentQuestionIndex = data.currentQuestionIndex || 0;
+        gameState.currentScore = data.currentScore || 0;
+        gameState.safetyLevel = data.safetyLevel || 0;
+        gameState.hintsUsed = data.hintsUsed || 0;
+        gameState.fiftyFiftyUsed = Boolean(data.fiftyFiftyUsed);
+        gameState.audiencePollUsed = Boolean(data.audiencePollUsed);
+        gameState.gameActive = true;
+
+        persistGameState();
+        displayQuestionContent(data.currentQuestion, data.currentQuestion.index);
         updatePrizeHighlight();
         updateLifelines();
         updateScoreDisplay();
@@ -77,9 +91,9 @@ function displayPrizeLadder() {
 function renderSidebar() {
     const sidebar = document.getElementById('gameSidebarContent');
     sidebar.innerHTML = `
-        <p><strong>Ülesanne:</strong> ${escapeHtml(gameState.assignmentTitle || 'Valimata')}</p>
+        <p><strong>Ulesanne:</strong> ${escapeHtml(gameState.assignmentTitle || 'Valimata')}</p>
         <p><strong>Turvatasemed:</strong> 1 000, 32 000 ja 1 000 000</p>
-        <p><strong>Reegel:</strong> vale vastus lõpetab mängu ja tulemus langeb viimasele turvatasemele.</p>
+        <p><strong>Reegel:</strong> vale vastus lopetab mangu ja tulemus langeb viimasele turvatasemele.</p>
     `;
 }
 
@@ -90,9 +104,11 @@ function showGameContent() {
 
 function displayQuestionContent(question, index) {
     gameState.currentQuestionIndex = index;
+    gameState.pendingNextQuestion = null;
     clearQuestionPopups();
+    hideNextButton();
 
-    document.getElementById('questionNumber').textContent = `Küsimus ${index + 1}/${gameState.totalQuestions}`;
+    document.getElementById('questionNumber').textContent = `Kusimus ${index + 1}/${gameState.totalQuestions}`;
     document.getElementById('questionLevel').textContent = `Tase ${question.level}`;
     document.getElementById('questionText').textContent = question.question;
 
@@ -128,47 +144,45 @@ async function answerQuestion(optionIndex) {
         });
 
         if (!response.ok) {
-            throw new Error('Vastuse kontrollimine ebaõnnestus');
+            throw new Error('Vastuse kontrollimine ebaonnestus');
         }
 
         const data = await response.json();
         const currentQuestion = gameState.allQuestions[gameState.currentQuestionIndex];
+
         highlightAnswer(optionIndex, currentQuestion.correctIndex, data.isCorrect);
         showExplanation(data.explanation);
-
-        await wait(1800);
 
         if (data.isCorrect) {
             gameState.currentScore = data.currentScore || data.finalScore || gameState.currentScore;
             gameState.safetyLevel = getSafetyLevelForQuestion(gameState.currentQuestionIndex + 1);
             updateScoreDisplay();
+            updatePrizeHighlight();
+            updateLifelines();
 
             if (data.gameState === 'won') {
                 clearStoredGameSession();
-                showResult('Palju õnne!', data.message, data.finalScore, 15, data.explanation);
+                showResult('Palju onne!', data.message, data.finalScore, 15, data.explanation);
                 return;
             }
 
-            const nextQuestion = data.nextQuestion;
-            updatePrizeHighlight();
-            updateLifelines();
-            enableAnswerButtons();
-            gameState.gameActive = true;
-            displayQuestionContent(nextQuestion, nextQuestion.index);
+            gameState.pendingNextQuestion = data.nextQuestion;
+            persistGameState();
+            showNextButton();
             return;
         }
 
         clearStoredGameSession();
         showResult(
             'Vale vastus',
-            `Õige vastus oli: ${currentQuestion.options[currentQuestion.correctIndex]}`,
+            `Oige vastus oli: ${currentQuestion.options[currentQuestion.correctIndex]}`,
             data.finalScore,
             gameState.currentQuestionIndex + 1,
             data.explanation
         );
     } catch (error) {
         console.error('Error answering question:', error);
-        alert(`Viga vastuse töötlemisel: ${error.message}`);
+        alert(`Viga vastuse tootlemisel: ${error.message}`);
         gameState.gameActive = true;
         enableAnswerButtons();
     }
@@ -199,6 +213,24 @@ function clearQuestionPopups() {
     document.getElementById('hintText').textContent = '';
     document.getElementById('pollResults').innerHTML = '';
     document.getElementById('explanationText').textContent = '';
+}
+
+function showNextButton() {
+    document.getElementById('btnNextQuestion').classList.remove('hidden');
+}
+
+function hideNextButton() {
+    document.getElementById('btnNextQuestion').classList.add('hidden');
+}
+
+function goToNextQuestion() {
+    if (!gameState.pendingNextQuestion) {
+        return;
+    }
+
+    enableAnswerButtons();
+    gameState.gameActive = true;
+    displayQuestionContent(gameState.pendingNextQuestion, gameState.pendingNextQuestion.index);
 }
 
 function disableAnswerButtons() {
@@ -322,7 +354,7 @@ async function askAudience() {
 
         const data = await response.json();
         if (!data.success) {
-            throw new Error(data.error || 'Publikuhääletus ei ole saadaval');
+            throw new Error(data.error || 'Publikuhaaletus ei ole saadaval');
         }
 
         displayPoll(data.poll);
@@ -352,7 +384,7 @@ function displayPoll(poll) {
 }
 
 async function quitGame() {
-    if (!confirm('Oled kindel, et soovid mängu lõpetada?')) {
+    if (!confirm('Oled kindel, et soovid mangu lopetada?')) {
         return;
     }
 
@@ -366,12 +398,12 @@ async function quitGame() {
         });
 
         if (!response.ok) {
-            throw new Error('Mängu lõpetamine ebaõnnestus');
+            throw new Error('Mangu lopetamine ebaonnestus');
         }
 
         const data = await response.json();
         clearStoredGameSession();
-        showResult('Mäng lõpetatud', data.message, data.finalScore, gameState.currentQuestionIndex, '');
+        showResult('Mang lopetatud', data.message, data.finalScore, gameState.currentQuestionIndex, '');
     } catch (error) {
         console.error('Error quitting game:', error);
         alert(error.message);
@@ -388,17 +420,14 @@ function showResult(title, message, finalScore, answeredCount, explanation) {
     const details = document.getElementById('resultDetails');
     const explanationHtml = explanation ? `<p><strong>Selgitus:</strong> ${escapeHtml(explanation)}</p>` : '';
     details.innerHTML = `
-        <p><strong>Lõppskoor:</strong> ${formatPoints(finalScore)}</p>
-        <p><strong>Vastatud küsimusi:</strong> ${answeredCount}/15</p>
+        <p><strong>Loppskoor:</strong> ${formatPoints(finalScore)}</p>
+        <p><strong>Vastatud kusimusi:</strong> ${answeredCount}/15</p>
         ${explanationHtml}
     `;
 }
 
 function goHome() {
-    sessionStorage.removeItem('gameSessionId');
-    sessionStorage.removeItem('selectedAssignmentId');
-    sessionStorage.removeItem('assignmentTitle');
-    sessionStorage.removeItem('gameQuestions');
+    clearStoredGameSession();
     window.location.href = '/';
 }
 
@@ -408,10 +437,6 @@ function getSafetyLevelForQuestion(questionNumber) {
 
 function formatPoints(points) {
     return new Intl.NumberFormat('et-EE').format(points) + ' punkti';
-}
-
-function wait(ms) {
-    return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
 function escapeHtml(value) {
@@ -425,4 +450,26 @@ function escapeHtml(value) {
 
 function showError(message) {
     alert(`Viga: ${message}`);
+}
+
+function persistGameState() {
+    if (gameState.sessionId) {
+        sessionStorage.setItem('gameSessionId', gameState.sessionId);
+        localStorage.setItem('gameSessionId', gameState.sessionId);
+    }
+
+    if (gameState.assignmentTitle) {
+        sessionStorage.setItem('assignmentTitle', gameState.assignmentTitle);
+        localStorage.setItem('assignmentTitle', gameState.assignmentTitle);
+    }
+
+    if (Array.isArray(gameState.allQuestions) && gameState.allQuestions.length > 0) {
+        const serializedQuestions = JSON.stringify(gameState.allQuestions);
+        sessionStorage.setItem('gameQuestions', serializedQuestions);
+        localStorage.setItem('gameQuestions', serializedQuestions);
+    }
+}
+
+function getStoredValue(key) {
+    return sessionStorage.getItem(key) || localStorage.getItem(key);
 }

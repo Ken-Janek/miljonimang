@@ -156,6 +156,49 @@ router.post('/answer', (req, res) => {
   }
 });
 
+router.get('/state/:sessionId', (req, res) => {
+  try {
+    const { sessionId } = req.params;
+    const session = gameSessions.get(sessionId);
+
+    if (!session) {
+      return res.status(404).json({
+        success: false,
+        error: 'Game session not found'
+      });
+    }
+
+    const currentQuestion = session.questions[session.currentQuestionIndex];
+
+    return res.json({
+      success: true,
+      sessionId: session.sessionId,
+      assignmentId: session.assignmentId,
+      currentQuestionIndex: session.currentQuestionIndex,
+      currentScore: session.score,
+      safetyLevel: session.safetyLevel,
+      hintsUsed: session.hintsUsed,
+      fiftyFiftyUsed: session.fiftyFiftyUsed,
+      audiencePollUsed: session.audiencePollUsed,
+      gameState: session.gameState,
+      currentQuestion: {
+        index: session.currentQuestionIndex,
+        level: currentQuestion.level,
+        question: currentQuestion.question,
+        options: currentQuestion.options,
+        totalQuestions: session.questions.length
+      },
+      questions: session.questions
+    });
+  } catch (error) {
+    console.error('Error restoring game session:', error);
+    return res.status(500).json({
+      success: false,
+      error: error.message
+    });
+  }
+});
+
 /**
  * POST /api/game/hint
  * Get a hint

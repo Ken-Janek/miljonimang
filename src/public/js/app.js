@@ -112,11 +112,16 @@ async function startGame() {
         const data = await response.json();
 
         sessionStorage.setItem('gameSessionId', data.sessionId);
+        localStorage.setItem('gameSessionId', data.sessionId);
         sessionStorage.setItem('selectedAssignmentId', currentAssignmentId);
+        localStorage.setItem('selectedAssignmentId', currentAssignmentId);
         sessionStorage.setItem('assignmentTitle', currentAssignment.title);
+        localStorage.setItem('assignmentTitle', currentAssignment.title);
 
         if (data.questions) {
-            sessionStorage.setItem('gameQuestions', JSON.stringify(data.questions));
+            const serializedQuestions = JSON.stringify(data.questions);
+            sessionStorage.setItem('gameQuestions', serializedQuestions);
+            localStorage.setItem('gameQuestions', serializedQuestions);
         }
 
         window.location.href = '/game';

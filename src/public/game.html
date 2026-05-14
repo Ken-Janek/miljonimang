@@ -3,14 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Miljonimäng - Mängi</title>
+    <title>Miljonimang - Mangi</title>
     <link rel="stylesheet" href="css/style.css?v=orange-clean-20260512">
 </head>
 <body class="game-body">
     <div class="game-container">
         <header class="game-header">
             <div class="header-left">
-                <h1>Miljonimäng</h1>
+                <h1>Miljonimang</h1>
             </div>
             <div class="header-right">
                 <div class="score-display">
@@ -29,7 +29,7 @@
             <main class="game-main">
                 <div id="gameLoading" class="loading-container hidden">
                     <div class="spinner"></div>
-                    <p>Laadin küsimusi...</p>
+                    <p>Laadin kusimusi...</p>
                 </div>
 
                 <div id="gameContent" class="game-content hidden">
@@ -44,23 +44,23 @@
 
                     <div class="lifelines">
                         <button id="btnHint" class="lifeline-btn" onclick="getHint()">
-                            <span class="icon">💡</span>
+                            <span class="icon">V</span>
                             <span class="label">Vihje</span>
                         </button>
                         <button id="btn50" class="lifeline-btn" onclick="use50Fifty()">
-                            <span class="icon">🎯</span>
+                            <span class="icon">50</span>
                             <span class="label">50:50</span>
                         </button>
                         <button id="btnAudience" class="lifeline-btn" onclick="askAudience()">
-                            <span class="icon">👥</span>
-                            <span class="label">Publiku hääletus</span>
+                            <span class="icon">P</span>
+                            <span class="label">Publiku haaletus</span>
                         </button>
                     </div>
 
                     <div class="answers-grid" id="answersGrid"></div>
 
                     <div id="hintBox" class="hint-box hidden">
-                        <strong>💡 Vihje:</strong>
+                        <strong>Vihje:</strong>
                         <p id="hintText"></p>
                     </div>
 
@@ -70,12 +70,13 @@
                     </div>
 
                     <div id="pollBox" class="poll-box hidden">
-                        <strong>👥 Publiku hääletus:</strong>
+                        <strong>Publiku haaletus:</strong>
                         <div id="pollResults" class="poll-results"></div>
                     </div>
 
                     <div class="action-buttons">
-                        <button class="btn-secondary" onclick="quitGame()">Lõpeta mäng</button>
+                        <button id="btnNextQuestion" class="btn-primary hidden" onclick="goToNextQuestion()">Edasi</button>
+                        <button class="btn-secondary" onclick="quitGame()">Lopeta mang</button>
                     </div>
                 </div>
 

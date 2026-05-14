@@ -99,6 +99,10 @@ button {
     opacity: 0;
 }
 
+.hidden {
+    display: none !important;
+}
+
 /* Assignment Selection */
 .assignments-list {
     display: grid;
