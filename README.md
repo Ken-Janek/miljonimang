@@ -1,3 +1,11 @@
+## Rakenduse Kasutamine
+
+Rakendus on juba juurutatud Railway platvormile ja on kättesaadav aadressil:
+
+**https://miljonimang-production.up.railway.app/**
+
+> Rakendust pole vaja lokaalselt käivitada, ava lihtsalt Railway URL.
+
 # Miljonimäng - Assignment Validation Game
 
 ## Projekti kirjeldus
@@ -12,14 +20,6 @@ Erinevalt tavalistest testidest kontrollib Miljonimäng mitte lihtsalt seda, kas
 - **Frontend**: HTML5, CSS3, JavaScript (ES6+)
 - **AI**: OpenAI API (GPT-4/GPT-3.5)
 - **Andmehaldus**: JSON failid, faalisüsteem
-
-## Rakenduse Kasutamine
-
-Rakendus on juba juurutatud Railway platvormile ja on kättesaadav aadressil:
-
-**https://miljonimang-production.up.railway.app/**
-
-> Rakendust pole vaja lokaalselt käivitada, ava lihtsalt Railway URL.
 
 ## Hindamis- ja projektimaterjalid
 
