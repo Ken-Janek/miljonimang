@@ -41,7 +41,7 @@ async function startGameSession() {
 
         const questionsData = sessionStorage.getItem('gameQuestions');
         if (!questionsData) {
-            throw new Error('Küsimused ei leitud. Alusta mängu uuesti avalehelt.');
+            throw new Error('Küsimusi ei leitud. Alusta mängu uuesti avalehelt.');
         }
 
         gameState.allQuestions = JSON.parse(questionsData);

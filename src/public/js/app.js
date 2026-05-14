@@ -1,15 +1,10 @@
-// Global state
 let currentAssignmentId = null;
 let currentAssignment = null;
 
-// Initialize app
 document.addEventListener('DOMContentLoaded', () => {
     loadAssignments();
 });
 
-/**
- * Load all assignments from backend
- */
 async function loadAssignments() {
     try {
         showState('loadingState');
@@ -33,14 +28,11 @@ async function loadAssignments() {
     }
 }
 
-/**
- * Display assignments list
- */
 function displayAssignments(assignments) {
     const list = document.getElementById('assignmentsList');
     list.innerHTML = '';
 
-    assignments.forEach(assignment => {
+    assignments.forEach((assignment) => {
         const card = document.createElement('div');
         card.className = 'assignment-card';
         card.innerHTML = `
@@ -52,9 +44,6 @@ function displayAssignments(assignments) {
     });
 }
 
-/**
- * Select and start game directly (skip assignment details page)
- */
 async function selectAssignment(assignmentId) {
     try {
         showState('loadingState');
@@ -66,7 +55,6 @@ async function selectAssignment(assignmentId) {
         currentAssignmentId = assignmentId;
         currentAssignment = data.assignment;
 
-        // Start game directly without showing assignment details
         startGame();
     } catch (error) {
         console.error('Error loading assignment:', error);
@@ -74,20 +62,12 @@ async function selectAssignment(assignmentId) {
     }
 }
 
-/**
- * Display assignment details
- */
 function displayAssignmentDetail(assignment) {
     document.getElementById('detailTitle').textContent = assignment.title;
-
-    // Convert markdown to HTML
     const htmlContent = markdownToHtml(assignment.assignment);
     document.getElementById('detailContent').innerHTML = htmlContent;
 }
 
-/**
- * Simple markdown to HTML converter
- */
 function markdownToHtml(markdown) {
     let html = markdown
         .replace(/^### (.*?)$/gm, '<h3>$1</h3>')
@@ -108,9 +88,6 @@ function markdownToHtml(markdown) {
     return html;
 }
 
-/**
- * Start game
- */
 async function startGame() {
     if (!currentAssignmentId) {
         showError('Ülesannet ei valitud');
@@ -134,17 +111,14 @@ async function startGame() {
 
         const data = await response.json();
 
-        // Store session data
         sessionStorage.setItem('gameSessionId', data.sessionId);
         sessionStorage.setItem('selectedAssignmentId', currentAssignmentId);
         sessionStorage.setItem('assignmentTitle', currentAssignment.title);
-        
-        // Store all questions
+
         if (data.questions) {
             sessionStorage.setItem('gameQuestions', JSON.stringify(data.questions));
         }
 
-        // Redirect to game page
         window.location.href = '/game';
     } catch (error) {
         console.error('Error starting game:', error);
@@ -152,21 +126,15 @@ async function startGame() {
     }
 }
 
-/**
- * Go back to assignments list
- */
 function goBack() {
     currentAssignmentId = null;
     currentAssignment = null;
     loadAssignments();
 }
 
-/**
- * Show specific state
- */
 function showState(stateName) {
     const states = document.querySelectorAll('.state');
-    states.forEach(state => state.classList.add('hidden'));
+    states.forEach((state) => state.classList.add('hidden'));
 
     const targetState = document.getElementById(stateName);
     if (targetState) {
@@ -174,9 +142,6 @@ function showState(stateName) {
     }
 }
 
-/**
- * Show error
- */
 function showError(message) {
     document.getElementById('errorMessage').textContent = message;
     showState('errorState');

@@ -3,36 +3,29 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Miljonimäng - Ülesande Valideerimine</title>
+    <title>Miljonimäng - Ülesande valideerimine</title>
     <link rel="stylesheet" href="css/style.css?v=orange-clean-20260512">
 </head>
 <body>
     <div class="container">
-        <!-- Header -->
         <header class="header">
             <div class="header-content">
-                <h1>🎮 Miljonimäng</h1>
+                <h1>Miljonimäng</h1>
                 <p class="subtitle">Kontrolli, kas saad lahendusest aru</p>
             </div>
         </header>
 
-        <!-- Main Content -->
         <main class="main">
-            <!-- Loading State -->
             <div id="loadingState" class="state hidden">
                 <div class="spinner"></div>
                 <p>Laadin ülesandeid...</p>
             </div>
 
-            <!-- Assignments List -->
             <div id="assignmentsState" class="state">
                 <h2>Vali ülesanne:</h2>
-                <div id="assignmentsList" class="assignments-list">
-                    <!-- Will be populated by JavaScript -->
-                </div>
+                <div id="assignmentsList" class="assignments-list"></div>
             </div>
 
-            <!-- Assignment Details -->
             <div id="assignmentDetailState" class="state hidden">
                 <div class="assignment-detail">
                     <button class="btn-back" onclick="goBack()">← Tagasi</button>
@@ -45,17 +38,15 @@
                 </div>
             </div>
 
-            <!-- Error State -->
             <div id="errorState" class="state hidden">
                 <div class="error-box">
-                    <h3>❌ Viga!</h3>
+                    <h3>Viga!</h3>
                     <p id="errorMessage"></p>
                     <button class="btn-secondary" onclick="goBack()">Tagasi</button>
                 </div>
             </div>
         </main>
 
-        <!-- Footer -->
         <footer class="footer">
             <p>© 2026 Miljonimäng | Ülesannete valideerimine AI abil</p>
         </footer>

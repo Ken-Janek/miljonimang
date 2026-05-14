@@ -87,7 +87,7 @@ function maskAnswerInHint(text, answer) {
   if (!text || !answer) return text;
 
   const escapedAnswer = String(answer).replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-  return text.replace(new RegExp(escapedAnswer, 'gi'), 'oige variandiga');
+  return text.replace(new RegExp(escapedAnswer, 'gi'), 'õige variandiga');
 }
 
 function generateLocalHint(question) {
@@ -98,24 +98,24 @@ function generateLocalHint(question) {
 
   const hintRules = [
     {
-      keywords: ['eventlistener', 'addeventlistener', 'klik', 'sundmus', 'listener'],
-      hint: 'Motle sellele, kuidas JavaScript saab teada, et kasutaja tegi mingi tegevuse. Otsi varianti, mis seob kasutaja tegevuse koodiga.'
+      keywords: ['eventlistener', 'addeventlistener', 'klik', 'sündmus', 'listener'],
+      hint: 'Mõtle sellele, kuidas JavaScript saab teada, et kasutaja tegi mingi tegevuse. Otsi varianti, mis seob kasutaja tegevuse koodiga.'
     },
     {
       keywords: ['dom', 'queryselector', 'element', 'innerhtml', 'textcontent'],
-      hint: 'Keskendu sellele, kuidas JavaScript leiab elemendi voi muudab lehel olevat sisu. Oige vastus puudutab kasutajaliidese muutmist koodi abil.'
+      hint: 'Keskendu sellele, kuidas JavaScript leiab elemendi või muudab lehel olevat sisu. Õige vastus puudutab kasutajaliidese muutmist koodi abil.'
     },
     {
       keywords: ['parseint', 'number(', 'sisend', 'string', 'teisenda'],
-      hint: 'Motle sellele, mis tuupi andmed tulevad sisendvaljast ja miks neist ei pruugi kohe arvutada saada.'
+      hint: 'Mõtle sellele, mis tüüpi andmed tulevad sisendväljast ja miks neist ei pruugi kohe arvutada saada.'
     },
     {
       keywords: ['if', 'else', 'tingimus', 'kontroll', 'valideer'],
-      hint: 'Otsi varianti, mis selgitab otsustusloogikat. JavaScript peab enne tegevust kontrollima, kas sisend voi olukord on sobiv.'
+      hint: 'Otsi varianti, mis selgitab otsustusloogikat. JavaScript peab enne tegevust kontrollima, kas sisend või olukord on sobiv.'
     },
     {
       keywords: ['async', 'await', 'fetch', 'promise'],
-      hint: 'Siin on oluline, et JavaScript ootaks andmete saabumist voi tegeleks vastusega alles siis, kui see on kaes.'
+      hint: 'Siin on oluline, et JavaScript ootaks andmete saabumist või tegeleks vastusega alles siis, kui see on käes.'
     },
     {
       keywords: ['error', 'try', 'catch', 'viga'],
@@ -126,7 +126,7 @@ function generateLocalHint(question) {
   const matchingRule = hintRules.find((rule) => rule.keywords.some((keyword) => combinedText.includes(keyword)));
   const hint = matchingRule
     ? matchingRule.hint
-    : 'Motle sellele, milline variant seletab JavaScripti loogikat koige paremini. Valista vastused, mis raagivad ainult vaate valimusest.';
+    : 'Mõtle sellele, milline variant seletab JavaScripti loogikat kõige paremini. Välista vastused, mis räägivad ainult vaate välimusest.';
 
   return maskAnswerInHint(hint, correctAnswer);
 }
@@ -230,33 +230,33 @@ function generateMockQuestions() {
     { level: 1, question: 'Miks kasutatakse JavaScriptis addEventListener meetodit?', options: ['Et reageerida tegevusele', 'Et muuta faili laiendit', 'Et peita brauser', 'Et kustutada CSS'], correctIndex: 0, explanation: 'addEventListener seob JavaScripti kasutaja tegevusega, näiteks klikiga.' },
     { level: 1, question: 'Mida tagastab input valja value tavaliselt algselt?', options: ['Stringi vaartuse', 'Booleani vaartuse', 'Massiivi vaartuse', 'Objekti vaartuse'], correctIndex: 0, explanation: 'HTML sisendvaljad annavad JavaScripti jaoks vaikimisi stringi.' },
     { level: 2, question: 'Miks kasutatakse querySelector meetodit?', options: ['Et leida DOM element', 'Et sorteerida massiiv', 'Et teha API voti', 'Et tihendada faili'], correctIndex: 0, explanation: 'querySelector aitab JavaScriptil leida lehelt vajaliku elemendi.' },
-    { level: 2, question: 'Milleks on kasulik tingimuslause if?', options: ['Et kontrollida olukorda', 'Et kujundada nuppu', 'Et muuta faili nime', 'Et avada uus sakk'], correctIndex: 0, explanation: 'if lubab JavaScriptil teha otsuseid sisendi voi oleku pohjal.' },
-    { level: 3, question: 'Miks teisendatakse kasutaja sisend Number abil arvuks?', options: ['Et arvutus toimiks korrektselt', 'Et HTML muutuks kiiremaks', 'Et CSS saaks laadida', 'Et server sulguks'], correctIndex: 0, explanation: 'Ilma teisenduseta voib JavaScript teha stringi uhendamist, mitte arvutust.' }
+    { level: 2, question: 'Milleks on kasulik tingimuslause if?', options: ['Et kontrollida olukorda', 'Et kujundada nuppu', 'Et muuta faili nime', 'Et avada uus sakk'], correctIndex: 0, explanation: 'if lubab JavaScriptil teha otsuseid sisendi või oleku põhjal.' },
+    { level: 3, question: 'Miks teisendatakse kasutaja sisend Number abil arvuks?', options: ['Et arvutus toimiks korrektselt', 'Et HTML muutuks kiiremaks', 'Et CSS saaks laadida', 'Et server sulguks'], correctIndex: 0, explanation: 'Ilma teisenduseta võib JavaScript teha stringi ühendamist, mitte arvutust.' }
   ];
 }
 
 function generateAssignmentBasedMockQuestions(assignment, solutionFiles) {
-  const title = assignment.title || `Ulesanne ${assignment.id}`;
+  const title = assignment.title || `Ülesanne ${assignment.id}`;
   const jsFiles = solutionFiles.filter((file) => file.extension === 'js');
   const primaryJsFile = jsFiles[0]?.name || 'script.js';
   const secondaryJsFile = jsFiles[1]?.name || primaryJsFile;
 
   return [
-    { level: 1, question: `Milline on faili "${primaryJsFile}" koige toenaolisem roll selles lahenduses?`, options: ['Rakenduse loogika juhtimine', 'Ainult kujunduse hoidmine', 'Pildifailide salvestamine', 'Serveri paigaldamine'], correctIndex: 0, explanation: 'JavaScripti fail kannab tavaliselt rakenduse kaitumisloogikat ja kasutaja tegevuste tootlemist.' },
+    { level: 1, question: `Milline on faili "${primaryJsFile}" kõige tõenäolisem roll selles lahenduses?`, options: ['Rakenduse loogika juhtimine', 'Ainult kujunduse hoidmine', 'Pildifailide salvestamine', 'Serveri paigaldamine'], correctIndex: 0, explanation: 'JavaScripti fail kannab tavaliselt rakenduse käitumisloogikat ja kasutaja tegevuste töötlemist.' },
     { level: 1, question: 'Miks on JavaScript sellise ulesande puhul oluline?', options: ['Et reageerida kasutajale', 'Et muuta GitHubi linki', 'Et asendada markdowni', 'Et peita kausta nimi'], correctIndex: 0, explanation: 'JavaScript juhib tavaliselt kasutaja sisendit, loogikat ja tulemuse kuvamist.' },
-    { level: 2, question: `Mida voib JavaScript fail "${secondaryJsFile}" teha, kui kasutaja vajutab nuppu?`, options: ['Kaivitada funktsiooni', 'Muuta faili laiendit', 'Kustutada brauseri ajaloo', 'Lukustada klaviatuuri'], correctIndex: 0, explanation: 'Nupu vajutus seotakse JavaScriptis tihti funktsiooniga, mis tootleb tegevuse.' },
-    { level: 2, question: 'Miks tuleb kasutaja sisendit enne tootlemist valideerida?', options: ['Et valtida vigast loogikat', 'Et muuta fonti vaiksemaks', 'Et peita punktitabelit', 'Et vahetada faviconi'], correctIndex: 0, explanation: 'Valideerimine aitab JavaScriptil vältida vigaseid olukordi ja ootamatuid tulemusi.' },
-    { level: 3, question: 'Milline JavaScripti teema on sellises lahenduses koige olulisem?', options: ['Andmete ja sundmuste tootlus', 'Ainult varvivalik', 'Ainult faili nimi', 'Ainult brauseri logo'], correctIndex: 0, explanation: 'Sellistes ulesannetes on oluline, kuidas JavaScript tootleb tegevusi ja muudab olekut.' },
-    { level: 6, question: 'Mida peaks hea JavaScripti keskne kusimus kontrollima?', options: ['Miks funktsioon nii toimib', 'Mis varvi nupp on', 'Mis nimi kaustal on', 'Mis kell fail loodi'], correctIndex: 0, explanation: 'Kusimus peaks kontrollima, kas oppija saab aru JavaScripti loogikast, mitte ainult valimusest.' },
+    { level: 2, question: `Mida võib JavaScript fail "${secondaryJsFile}" teha, kui kasutaja vajutab nuppu?`, options: ['Käivitada funktsiooni', 'Muuta faili laiendit', 'Kustutada brauseri ajaloo', 'Lukustada klaviatuuri'], correctIndex: 0, explanation: 'Nupu vajutus seotakse JavaScriptis tihti funktsiooniga, mis töötleb tegevuse.' },
+    { level: 2, question: 'Miks tuleb kasutaja sisendit enne töötlemist valideerida?', options: ['Et vältida vigast loogikat', 'Et muuta fonti väiksemaks', 'Et peita punktitabelit', 'Et vahetada faviconi'], correctIndex: 0, explanation: 'Valideerimine aitab JavaScriptil vältida vigaseid olukordi ja ootamatuid tulemusi.' },
+    { level: 3, question: 'Milline JavaScripti teema on sellises lahenduses kõige olulisem?', options: ['Andmete ja sündmuste töötlus', 'Ainult värvivalik', 'Ainult faili nimi', 'Ainult brauseri logo'], correctIndex: 0, explanation: 'Sellistes ülesannetes on oluline, kuidas JavaScript töötleb tegevusi ja muudab olekut.' },
+    { level: 6, question: 'Mida peaks hea JavaScripti keskne küsimus kontrollima?', options: ['Miks funktsioon nii toimib', 'Mis värvi nupp on', 'Mis nimi kaustal on', 'Mis kell fail loodi'], correctIndex: 0, explanation: 'Küsimus peaks kontrollima, kas õppija saab aru JavaScripti loogikast, mitte ainult välimusest.' },
     { level: 6, question: 'Mis on event listeneri peamine eesmärk?', options: ['Siduda tegevus koodiga', 'Muuta HTML CSSiks', 'Saata fail printerisse', 'Vahendada pildi suurust'], correctIndex: 0, explanation: 'Event listener kuulab kasutaja tegevusi ja lubab JavaScriptil neile reageerida.' },
     { level: 7, question: 'Miks on kasulik hoida JavaScripti loogikat funktsioonides?', options: ['Koodi on lihtsam testida', 'Nuppe saab suuremaks teha', 'HTML kaob luhenemisel', 'Pildid muutuvad teravamaks'], correctIndex: 0, explanation: 'Funktsioonidesse jagatud loogika on loetavam, testitavam ja hooldatavam.' },
-    { level: 8, question: 'Milline probleem tekib, kui JavaScript muudab DOM-i vales kohas voi valel ajal?', options: ['Kasutajaliides voib anda vale tulemuse', 'Node.js kustub arvutist', 'GitHubi repo kaob', 'Brauser vahetab keelt'], correctIndex: 0, explanation: 'Kui DOM-i muudetakse valesti, ei pruugi kasutaja naha oiget seisu voi tulemust.' },
-    { level: 9, question: 'Miks peaks JavaScriptis vead kinni pyydma voi kasutajale naitama?', options: ['Et rakendus kaituks selgemalt', 'Et CSS saaks tumedamaks', 'Et faili nimi oleks pikem', 'Et JSON muutuks HTMLiks'], correctIndex: 0, explanation: 'Veakäsitlus aitab vältida segast olukorda ja annab kasutajale arusaadava tagasiside.' },
-    { level: 11, question: 'Milline JavaScripti viga voib anda ootamatu tulemuse arvutuses voi tootluses?', options: ['Sisend jaab stringiks', 'Taust on liiga hele', 'Failinimi on lyhike', 'Pealkiri on rasvane'], correctIndex: 0, explanation: 'Kui sisendit ei teisendata oigesse tyyppi, võib loogika anda vale tulemuse.' },
-    { level: 11, question: 'Miks voib innerHTML kasutamine olla ohtlik, kui sisend tuleb kasutajalt?', options: ['See voib tuua XSS riski', 'See eemaldab alati JavaScripti', 'See peatab npm kaivituse', 'See muudab CSS JSONiks'], correctIndex: 0, explanation: 'innerHTML voib lubada pahatahtliku sisu sisestamist, kui sisendit ei puhastata.' },
-    { level: 12, question: 'Kuidas parandada JavaScripti hooldatavust suuremas lahenduses?', options: ['Jagada loogika vaiksemateks funktsioonideks', 'Kirjutada koik uhele reale', 'Peita koik muutujad kommentaari', 'Eemaldada koik tingimused'], correctIndex: 0, explanation: 'Vaiksemad vastutusalad ja selged funktsioonid muudavad koodi hooldatavamaks.' },
-    { level: 13, question: 'Milline JavaScripti disainivea mark voib viidata halvale struktuurile?', options: ['Uks funktsioon teeb liiga palju', 'Nupul on umarad nurgad', 'HTML failis on pealkiri', 'Kaustas on kaks faili'], correctIndex: 0, explanation: 'Kui üks funktsioon teeb korraga liiga palju, muutub loogika raskesti jälgitavaks ja testitavaks.' },
-    { level: 15, question: `Mis naitaks koige paremini, et oppija saab faili "${primaryJsFile}" loogikast aru?`, options: ['Ta oskab selgitada miks kood nii tootab', 'Ta maletab faili nime peast', 'Ta teab CSS muutujate jada', 'Ta oskab repo URLi kirjutada'], correctIndex: 0, explanation: 'Parim arusaamise mark on voime seletada JavaScripti loogikat, mitte ainult detaile meelde jatta.' }
+    { level: 8, question: 'Milline probleem tekib, kui JavaScript muudab DOM-i vales kohas või valel ajal?', options: ['Kasutajaliides võib anda vale tulemuse', 'Node.js kustub arvutist', 'GitHubi repo kaob', 'Brauser vahetab keelt'], correctIndex: 0, explanation: 'Kui DOM-i muudetakse valesti, ei pruugi kasutaja näha õiget seisu või tulemust.' },
+    { level: 9, question: 'Miks peaks JavaScriptis vead kinni püüdma või kasutajale näitama?', options: ['Et rakendus käituks selgemalt', 'Et CSS saaks tumedamaks', 'Et faili nimi oleks pikem', 'Et JSON muutuks HTMLiks'], correctIndex: 0, explanation: 'Veakäsitlus aitab vältida segast olukorda ja annab kasutajale arusaadava tagasiside.' },
+    { level: 11, question: 'Milline JavaScripti viga võib anda ootamatu tulemuse arvutuses või töötluses?', options: ['Sisend jääb stringiks', 'Taust on liiga hele', 'Failinimi on lühike', 'Pealkiri on rasvane'], correctIndex: 0, explanation: 'Kui sisendit ei teisendata õigesse tüüpi, võib loogika anda vale tulemuse.' },
+    { level: 11, question: 'Miks võib innerHTML kasutamine olla ohtlik, kui sisend tuleb kasutajalt?', options: ['See võib tuua XSS riski', 'See eemaldab alati JavaScripti', 'See peatab npm käivituse', 'See muudab CSS JSONiks'], correctIndex: 0, explanation: 'innerHTML võib lubada pahatahtliku sisu sisestamist, kui sisendit ei puhastata.' },
+    { level: 12, question: 'Kuidas parandada JavaScripti hooldatavust suuremas lahenduses?', options: ['Jagada loogika väiksemateks funktsioonideks', 'Kirjutada kõik ühele reale', 'Peita kõik muutujad kommentaari', 'Eemaldada kõik tingimused'], correctIndex: 0, explanation: 'Väiksemad vastutusalad ja selged funktsioonid muudavad koodi hooldatavamaks.' },
+    { level: 13, question: 'Milline JavaScripti disainivea märk võib viidata halvale struktuurile?', options: ['Üks funktsioon teeb liiga palju', 'Nupul on ümarad nurgad', 'HTML failis on pealkiri', 'Kaustas on kaks faili'], correctIndex: 0, explanation: 'Kui üks funktsioon teeb korraga liiga palju, muutub loogika raskesti jälgitavaks ja testitavaks.' },
+    { level: 15, question: `Mis näitaks kõige paremini, et õppija saab faili "${primaryJsFile}" loogikast aru?`, options: ['Ta oskab selgitada miks kood nii töötab', 'Ta mäletab faili nime peast', 'Ta teab CSS muutujate jada', 'Ta oskab repo URLi kirjutada'], correctIndex: 0, explanation: 'Parim arusaamise märk on võime seletada JavaScripti loogikat, mitte ainult detaile meelde jätta.' }
   ];
 }
 
